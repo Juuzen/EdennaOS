@@ -25,7 +25,7 @@ export function TaskbarBattery() {
 		if (!getBattery) return;
 
 		let cleanUp: (() => void) | undefined;
-		void getBattery().then((battery: BatteryManager) => {
+		void getBattery.call(navigator).then((battery: BatteryManager) => {
 			const updateIsCharging = () => {
 				setIsCharging(battery.charging);
 			};
