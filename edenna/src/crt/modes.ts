@@ -34,8 +34,10 @@ const OFF: CRTOptions = {
 };
 
 /**
- * Valori di partenza da rifinire a occhio sulla postazione vera:
- * monitor, luminosità e distanza cambiano molto la resa.
+ * Effetto sempre attivo: deve restare appena percettibile, da "monitor aziendale",
+ * senza disturbare la lettura dei documenti.
+ * Valori da rifinire a occhio sulla postazione vera: monitor, luminosità
+ * e distanza cambiano molto la resa.
  */
 const TERMINALE: CRTOptions = {
 	...OFF,
@@ -43,24 +45,29 @@ const TERMINALE: CRTOptions = {
 	// Righe sottili blu scuro: con lo sfondo chiaro di Edenna vanno "moltiplicate" (vedi crt.css).
 	enableScanlines: true,
 	scanlineColor: "#14284B",
-	scanlineOpacity: 0.07,
+	scanlineOpacity: 0.035,
 	scanlineThickness: 1,
-	scanlineGap: 2,
-	// Nessuna animazione: ogni effetto animato obbliga a ridisegnare tutto lo schermo
-	// a ogni fotogramma (vedi edenna/docs/CRT.md, "Prestazioni"). Per provare la banda
-	// di refresh: enableSweep: true, sweepStyle: "soft", sweepDuration: 14, sweepThickness: 80.
-	enableSweep: false,
-	// Bordi leggermente scuri e vetro curvo.
+	scanlineGap: 3,
+	// Banda di refresh lenta e morbida. È l'unico effetto animato della modalità:
+	// crt.css la sposta a scatti (circa 20 al secondo) per contenere il costo
+	// (vedi edenna/docs/CRT.md, "Prestazioni").
+	enableSweep: true,
+	sweepStyle: "soft",
+	sweepDuration: 16,
+	sweepThickness: 90,
+	// Bordi appena più scuri e vetro curvo.
 	enableVignette: true,
-	vignetteIntensity: 0.25,
+	vignetteIntensity: 0.12,
 	enableCurvature: true,
-	curvatureIntensity: 0.3,
+	curvatureIntensity: 0.15,
 };
 
 /** Pensata per brevi scoppi (qualche secondo): è la modalità più pesante. */
 const ANOMALIA: CRTOptions = {
 	...TERMINALE,
 	scanlineOpacity: 0.12,
+	scanlineGap: 2,
+	curvatureIntensity: 0.3,
 	enableSweep: true,
 	sweepStyle: "classic",
 	sweepDuration: 3,

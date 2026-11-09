@@ -25,3 +25,47 @@
 .edenna-crt > .crt-effect-wrapper > :not(.crt-inner) {
 	pointer-events: none;
 }
+
+/*
+ * Banda di refresh (sweep) più economica.
+ *
+ * La libreria la anima cambiando `top`, che obbliga a ricalcolare e ridisegnare
+ * la pagina a ogni fotogramma. Qui si usa `transform` (che la scheda grafica può
+ * spostare senza ridisegnare) e un'animazione a scatti: `steps()` aggiorna la
+ * posizione circa 20 volte al secondo invece di 60. Con una banda morbida e sfocata
+ * gli scatti non si notano.
+ *
+ * --edenna-sweep-steps: numero di scatti per passaggio (≈ durata in secondi × 20).
+ */
+.edenna-crt > .crt-effect-wrapper.sweep-on::before,
+.edenna-crt > .crt-effect-wrapper.sweep-soft::before {
+	top: 0;
+	will-change: transform;
+	animation: edenna-sweep var(--sweep-duration, 16s) steps(var(--edenna-sweep-steps, 320)) infinite;
+}
+
+@keyframes edenna-sweep {
+	from {
+		transform: translateY(calc(-1 * var(--sweep-thickness, 10px)));
+	}
+	to {
+		transform: translateY(100vh);
+	}
+}
+
+/* Nella modalità di base la banda è più leggera. */
+.edenna-crt[data-crt-mode="terminale"] > .crt-effect-wrapper.sweep-soft::before {
+	opacity: 0.6;
+}
+
+/* Nell'anomalia la banda corre veloce: animazione continua. */
+.edenna-crt[data-crt-mode="anomalia"] > .crt-effect-wrapper::before {
+	animation-timing-function: linear;
+}
+
+/* "Riduci movimento" del sistema: niente banda (come nella libreria). */
+@media (prefers-reduced-motion: reduce) {
+	.edenna-crt > .crt-effect-wrapper::before {
+		display: none;
+	}
+}
