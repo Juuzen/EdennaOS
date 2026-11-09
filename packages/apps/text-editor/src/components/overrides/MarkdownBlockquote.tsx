@@ -4,11 +4,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle, faExclamationTriangle, faInfoCircle, faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import styles from "../TextEditor.module.css";
 import { sanitizeProps } from "../../core/_utils/sanitizeProps";
+import { useTranslation } from "@prozilla-os/core";
+import { textEditorTranslations } from "../../locales";
 
 type Props = Partial<unknown> & Attributes & { children: ReactNode, className?: string };
 
 export function MarkdownBlockquote({ children, ...props }: MarkdownProps) {
 	sanitizeProps(props);
+	const { t } = useTranslation(textEditorTranslations); // [Edenna]
 
 	const formatContent = (children: ReactNode): [ReactNode, string | null] => {
 		if (!children) return [null, null];
@@ -36,35 +39,35 @@ export function MarkdownBlockquote({ children, ...props }: MarkdownProps) {
 				case "[!IMPORTANT]":
 					child = <span className={styles.Alert}>
 						<FontAwesomeIcon icon={faExclamationCircle}/>
-						Important
+						{t("alerts.important")}
 					</span>;
 					alertType = "Important";
 					break;
 				case "[!NOTE]":
 					child = <span className={styles.Alert}>
 						<FontAwesomeIcon icon={faInfoCircle}/>
-						Note
+						{t("alerts.note")}
 					</span>;
 					alertType = "Note";
 					break;
 				case "[!TIP]":
 					child = <span className={styles.Alert}>
 						<FontAwesomeIcon icon={faLightbulb}/>
-						Tip
+						{t("alerts.tip")}
 					</span>;
 					alertType = "Tip";
 					break;
 				case "[!WARNING]":
 					child = <span className={styles.Alert}>
 						<FontAwesomeIcon icon={faExclamationTriangle}/>
-						Warning
+						{t("alerts.warning")}
 					</span>;
 					alertType = "Warning";
 					break;
 				case "[!CAUTION]":
 					child = <span className={styles.Alert}>
 						<FontAwesomeIcon icon={faExclamationTriangle}/>
-						Caution
+						{t("alerts.caution")}
 					</span>;
 					alertType = "Caution";
 					break;

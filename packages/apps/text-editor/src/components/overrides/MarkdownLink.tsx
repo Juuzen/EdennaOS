@@ -2,7 +2,8 @@ import { MouseEventHandler, ReactNode, useMemo } from "react";
 import { faClipboard, faExternalLink } from "@fortawesome/free-solid-svg-icons";
 import { MarkdownProps } from "../TextEditor";
 import styles from "../TextEditor.module.css";
-import { Actions, ClickAction, copyToClipboard, DialogBox, ModalProps, ModalsConfig, TextDisplay, useContextMenu, useWindowedModal } from "@prozilla-os/core";
+import { Actions, ClickAction, copyToClipboard, DialogBox, ModalProps, ModalsConfig, TextDisplay, useContextMenu, useTranslation, useWindowedModal } from "@prozilla-os/core";
+import { textEditorTranslations } from "../../locales";
 import { sanitizeProps } from "../../core/_utils/sanitizeProps";
 import { removeUrlProtocol, Vector2 } from "@prozilla-os/shared";
 
@@ -13,6 +14,9 @@ interface MarkdownLinkProps extends MarkdownProps {
 
 export function MarkdownLink({ href, children, windowsManager, currentFile, setCurrentFile, app, ...props }: MarkdownLinkProps) {
 	const { openWindowedModal } = useWindowedModal();
+	// [Edenna] Translations
+	const { t } = useTranslation(textEditorTranslations);
+	const { t: tCore } = useTranslation();
 
 	const onClick = (event: MouseEvent) => {
 		event.preventDefault();
@@ -28,12 +32,12 @@ export function MarkdownLink({ href, children, windowsManager, currentFile, setC
 			} else {
 				openWindowedModal({
 					iconUrl: app.iconUrl as string | undefined,
-					title: "Failed to open link",
+					title: t("links.failed"),
 					size: new Vector2(450, 150),
 					Modal: (props: ModalProps) =>
 						<DialogBox {...props}>
-							<p>Target not found: "{href}"</p>
-							<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>Ok</button>
+							<p>{t("links.notFound", { target: href })}</p>
+							<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>{tCore("actions.ok")}</button>
 						</DialogBox>,
 				});
 			}
@@ -45,10 +49,10 @@ export function MarkdownLink({ href, children, windowsManager, currentFile, setC
 	const { onContextMenu } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
 			<TextDisplay>{removeUrlProtocol(href)}</TextDisplay>
-			<ClickAction label="Open link" icon={faExternalLink} onTrigger={(event) => {
+			<ClickAction label={t("links.open")} icon={faExternalLink} onTrigger={(event) => {
 				onClick(event as MouseEvent);
 			}}/>
-			<ClickAction label="Copy link" icon={faClipboard} onTrigger={() => {
+			<ClickAction label={t("links.copy")} icon={faClipboard} onTrigger={() => {
 				copyToClipboard(href);
 			}}/>
 		</Actions>,

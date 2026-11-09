@@ -1,10 +1,11 @@
 import { ChangeEventHandler, FC, KeyboardEventHandler, useCallback, useEffect, useState } from "react";
 import styles from "./FileExplorer.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faCaretLeft, faCaretRight, faCircleInfo, faCog, faDesktop, faFileLines, faHouse, faImage, faPlus, faSearch, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faCaretLeft, faCaretRight, faCircleInfo, faCog, faFolder, faPlus, faSearch, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { QuickAccessButton } from "./QuickAccessButton";
 import { ImportButton } from "./ImportButton";
-import { Actions, ClickAction, CODE_EXTENSIONS, DialogBox, DirectoryList, Divider, FileEventHandler, FolderEventHandler, ModalProps, ModalsConfig, OnSelectionChangeParams, useAlert, useContextMenu, useHistory, useSystemManager, useVirtualRoot, useWindowedModal, useWindowsManager, utilStyles, VirtualFile, VirtualFolder, VirtualFolderLink, VirtualRoot, WindowProps } from "@prozilla-os/core";
+import { Actions, ClickAction, CODE_EXTENSIONS, DialogBox, DirectoryList, Divider, FileEventHandler, FolderEventHandler, ModalProps, ModalsConfig, OnSelectionChangeParams, useAlert, useContextMenu, useHistory, useQuickAccessLabel, useSystemManager, useTranslation, useVirtualRoot, useWindowedModal, useWindowsManager, utilStyles, VirtualFile, VirtualFolder, VirtualFolderLink, VirtualRoot, WindowProps } from "@prozilla-os/core";
+import { fileExplorerTranslations } from "../locales";
 import { SELECTOR_MODE } from "../constants/fileExplorer.const";
 import { FileProperties } from "./modals/file-properties/FileProperties";
 import { JSX } from "react/jsx-runtime";
@@ -23,7 +24,11 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 
 	const virtualRoot = useVirtualRoot();
 	const windowsManager = useWindowsManager();
-	const { windowsConfig } = useSystemManager();
+	const { windowsConfig, virtualDriveConfig } = useSystemManager();
+	// [Edenna] Translations
+	const { t } = useTranslation(fileExplorerTranslations);
+	const { t: tCore } = useTranslation();
+	const getPlaceLabel = useQuickAccessLabel();
 
 	const [currentDirectory, setCurrentDirectory] = useState<VirtualFolder | null>(virtualRoot ? virtualRoot.navigateToFolder(startPath ?? "~") : null);
 	const [path, setPath] = useState<string>(currentDirectory?.path ?? "");
@@ -34,7 +39,7 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 	const { openWindowedModal } = useWindowedModal();
 	const { onContextMenu: onContextMenuFile } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
-			<ClickAction label={!isSelector ? "Open" : "Select"} onTrigger={(_event, file) => {
+			<ClickAction label={!isSelector ? tCore("actions.open") : t("actions.select")} onTrigger={(_event, file) => {
 				if (isSelector) {
 					onSelectionChange?.({ files: [(file as VirtualFile).id], directory: currentDirectory! });
 					onSelectionFinish?.({ files: [(file as VirtualFile).id], directory: currentDirectory! });
@@ -43,16 +48,16 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 				if (windowsManager != null)	(file as VirtualFile).open(windowsManager);
 			}}/>
 			{(props.triggerParams as VirtualFile).isDownloadable() && 
-				<ClickAction label="Export" icon={faUpload} onTrigger={(_event, file) => {
+				<ClickAction label={t("actions.export")} icon={faUpload} onTrigger={(_event, file) => {
 					(file as VirtualFile).download();
 				}}/>
 			}			
-			<ClickAction label="Delete" icon={faTrash} onTrigger={(_event, file) => {
+			<ClickAction label={tCore("actions.delete")} icon={faTrash} onTrigger={(_event, file) => {
 				(file as VirtualFile).delete();
 			}}/>
-			<ClickAction label="Properties" icon={faCircleInfo} onTrigger={(_event, file) => {
+			<ClickAction label={t("actions.properties")} icon={faCircleInfo} onTrigger={(_event, file) => {
 				openWindowedModal({
-					title: `${(file as VirtualFile).id} ${windowsConfig.titleSeparator} Properties`,
+					title: `${(file as VirtualFile).id} ${windowsConfig.titleSeparator} ${t("properties.title")}`,
 					iconUrl: (file as VirtualFile).getIconUrl(),
 					size: new Vector2(400, 500),
 					Modal: (props: object) => <FileProperties file={file as VirtualFile} {...props}/>,
@@ -62,14 +67,14 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 	});
 	const { onContextMenu: onContextMenuFolder } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
-			<ClickAction label="Open" onTrigger={(_event, folder) => {
+			<ClickAction label={tCore("actions.open")} onTrigger={(_event, folder) => {
 				changeDirectory((folder as VirtualFolderLink).linkedPath ?? (folder as VirtualFolder).name);
 			}}/>
 			{/* <ClickAction label={`Open in ${APP_NAMES.TERMINAL}`} icon={APP_ICONS.TERMINAL} onTrigger={(event, folder) => {
 				windowsManager?.open(APPS.TERMINAL, { startPath: (folder as VirtualFolder).path });
 			}}/> */}
 			<Divider/>
-			<ClickAction label="Delete" icon={faTrash} onTrigger={(_event, folder) => {
+			<ClickAction label={tCore("actions.delete")} icon={faTrash} onTrigger={(_event, folder) => {
 				(folder as VirtualFolder).delete();
 			}}/>
 		</Actions>,
@@ -112,7 +117,7 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 		const onError = (error: unknown) => {
 			alert({
 				title: (error as Error).message,
-				text: "You have exceeded the virtual drive capacity. Files and folders will not be saved until more storage is freed.",
+				text: t("errors.storageFull"),
 				iconUrl: app?.iconUrl as string | undefined,
 				size: new Vector2(300, 200),
 				single: true,
@@ -141,13 +146,13 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 
 			if (directory == null) {
 				openWindowedModal({
-					title: "Error",
+					title: t("errors.title"),
 					iconUrl: app?.iconUrl as string | undefined,
 					size: new Vector2(300, 150),
 					Modal: (props: JSX.IntrinsicAttributes & ModalProps) =>
 						<DialogBox {...props}>
-							<p>Invalid path: "{value}"</p>
-							<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>Ok</button>
+							<p>{t("errors.invalidPath", { path: value })}</p>
+							<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>{tCore("actions.ok")}</button>
 						</DialogBox>,
 				});
 				return;
@@ -164,7 +169,7 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 		<div className={!isSelector ? styles.FileExplorer : `${styles.FileExplorer} ${styles.Selector}`}>
 			<div className={styles.Header}>
 				<button
-					title="Back"
+					title={t("toolbar.back")}
 					tabIndex={0}
 					className={styles.IconButton}
 					onClick={() => { undo(); }}
@@ -173,7 +178,7 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 					<FontAwesomeIcon icon={faCaretLeft}/>
 				</button>
 				<button
-					title="Forward"
+					title={t("toolbar.forward")}
 					tabIndex={0}
 					className={styles.IconButton}
 					onClick={() => { redo(); }}
@@ -182,7 +187,7 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 					<FontAwesomeIcon icon={faCaretRight}/>
 				</button>
 				<button
-					title="Up"
+					title={t("toolbar.up")}
 					tabIndex={0}
 					className={styles.IconButton}
 					onClick={() => { changeDirectory(".."); }}
@@ -191,18 +196,18 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 					<FontAwesomeIcon icon={faArrowUp}/>
 				</button>
 				<button
-					title="New"
+					title={t("toolbar.new")}
 					tabIndex={0}
 					className={styles.IconButton}
 					onClick={() => {
 						openWindowedModal({
-							title: "Error",
+							title: t("errors.title"),
 							iconUrl: app?.iconUrl as string | undefined,
 							size: new Vector2(300, 150),
 							Modal: (props: JSX.IntrinsicAttributes & ModalProps) =>
 								<DialogBox {...props}>
-									<p>This folder is protected.</p>
-									<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>Ok</button>
+									<p>{t("errors.protectedFolder")}</p>
+									<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>{tCore("actions.ok")}</button>
 								</DialogBox>,
 						});
 
@@ -219,27 +224,32 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 				<input
 					value={path}
 					type="text"
-					aria-label="Path"
+					aria-label={t("toolbar.path")}
 					className={styles.PathInput}
 					tabIndex={0}
 					onChange={onPathChange as unknown as ChangeEventHandler}
 					onKeyDown={onKeyDown as unknown as KeyboardEventHandler}
-					placeholder="Enter a path..."
+					placeholder={t("toolbar.pathPlaceholder")}
 				/>
-				<ImportButton directory={currentDirectory!}/>
-				<button title="Search" tabIndex={0} className={styles.IconButton}>
+				<ImportButton directory={currentDirectory!} title={t("toolbar.import")}/>
+				<button title={t("toolbar.search")} tabIndex={0} className={styles.IconButton}>
 					<FontAwesomeIcon icon={faSearch}/>
 				</button>
-				<button title="Settings" tabIndex={0} className={styles.IconButton}>
+				<button title={t("toolbar.settings")} tabIndex={0} className={styles.IconButton}>
 					<FontAwesomeIcon icon={faCog}/>
 				</button>
 			</div>
 			<div className={styles.Body}>
 				<div className={styles.Sidebar}>
-					<QuickAccessButton name={"Home"} onClick={() => { changeDirectory("~"); }} icon={faHouse}/>
-					<QuickAccessButton name={"Desktop"} onClick={() => { changeDirectory("~/Desktop"); }} icon={faDesktop}/>
-					<QuickAccessButton name={"Images"} onClick={() => { changeDirectory("~/Pictures"); }} icon={faImage}/>
-					<QuickAccessButton name={"Documents"} onClick={() => { changeDirectory("~/Documents"); }} icon={faFileLines}/>
+					{/* [Edenna] Places come from virtualDriveConfig.quickAccess. */}
+					{virtualDriveConfig.quickAccess.map((place) =>
+						<QuickAccessButton
+							key={place.path}
+							name={getPlaceLabel(place)}
+							onClick={() => { changeDirectory(place.path, true); }}
+							icon={place.icon ?? faFolder}
+						/>
+					)}
 				</div>
 				<DirectoryList
 					directory={currentDirectory!} 
@@ -267,10 +277,7 @@ export function FileExplorer({ app, path: startPath, selectorMode, Footer, onSel
 			{!isSelector
 				? <span className={styles.Footer}>
 					<p className={utilStyles.TextLight}>
-						{itemCount === 1
-							? itemCount + " item"
-							: itemCount + " items"
-						}
+						{tCore("items", { count: itemCount })}
 					</p>
 				</span>
 				: Footer && <div className={styles.Footer}>

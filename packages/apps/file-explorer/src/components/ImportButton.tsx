@@ -6,9 +6,11 @@ import { VirtualFolder, VirtualFile } from "@prozilla-os/core";
 
 interface ImportButtonProps {
 	directory: VirtualFolder;
+	/** [Edenna] Tooltip, translated by the caller. */
+	title?: string;
 }
 
-export function ImportButton({ directory }: ImportButtonProps): ReactElement {
+export function ImportButton({ directory, title = "Import" }: ImportButtonProps): ReactElement {
 	const onChange = (event: InputEvent) => {
 		const files = (event.target as HTMLInputElement).files;
 
@@ -31,7 +33,7 @@ export function ImportButton({ directory }: ImportButtonProps): ReactElement {
 		});
 	};
 
-	return <label title="Import" tabIndex={0} className={styles.IconButton}>
+	return <label title={title} tabIndex={0} className={styles.IconButton}>
 		<input
 			type="file"
 			id="import"

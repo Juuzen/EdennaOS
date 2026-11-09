@@ -5,8 +5,9 @@ import { MarkdownLink } from "./overrides/MarkdownLink";
 import { MarkdownImage } from "./overrides/MarkdownImage";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { MarkdownBlockquote } from "./overrides/MarkdownBlockquote";
-import { App, ClickAction, CODE_EXTENSIONS, Divider, DropdownAction, HeaderMenu, ModalsManager, useSystemManager, useVirtualRoot, useWindowsManager, VirtualFile, WindowProps, WindowsManager } from "@prozilla-os/core";
+import { App, ClickAction, CODE_EXTENSIONS, Divider, DropdownAction, HeaderMenu, ModalsManager, useSystemManager, useTranslation, useVirtualRoot, useWindowsManager, VirtualFile, WindowProps, WindowsManager } from "@prozilla-os/core";
 import { DEFAULT_ZOOM, EXTENSION_TO_LANGUAGE, ZOOM_FACTOR } from "../constants/textEditor.const";
+import { textEditorTranslations } from "../locales";
 
 const OVERRIDES = {
 	a: MarkdownLink,
@@ -31,6 +32,7 @@ export interface TextEditorProps extends WindowProps {
 
 export function TextEditor({ file, path, setTitle, setIconUrl, close, mode, app, modalsManager }: TextEditorProps) {
 	const { windowsConfig } = useSystemManager();	
+	const { t } = useTranslation(textEditorTranslations); // [Edenna]
 	const ref = useRef<HTMLDivElement | HTMLTextAreaElement>(null);
 	const windowsManager = useWindowsManager();
 	const virtualRoot = useVirtualRoot();
@@ -69,16 +71,16 @@ export function TextEditor({ file, path, setTitle, setIconUrl, close, mode, app,
 
 	useEffect(() => {
 		// Update title
-		let label = currentFile?.id ?? "Untitled";
+		let label = currentFile?.id ?? t("title.untitled");
 
 		if (unsavedChanges)
 			label += "*";
 
 		if (currentMode === "view")
-			label += " (preview)";
+			label += " " + t("title.preview");
 
 		setTitle?.(app != null ? `${label} ${windowsConfig.titleSeparator} ${app.name}` : label);
-	}, [currentFile, setTitle, unsavedChanges, currentMode, app?.name]);
+	}, [currentFile, setTitle, unsavedChanges, currentMode, app?.name, t]);
 
 	useEffect(() => {
 		if (!initialised && currentFile == null && path != null) {
@@ -138,8 +140,8 @@ export function TextEditor({ file, path, setTitle, setIconUrl, close, mode, app,
 
 	return <div className={styles.TextEditor} style={{ fontSize: zoom }}>
 		<HeaderMenu>
-			<DropdownAction label="File" showOnHover={false}>
-				<ClickAction label="New" onTrigger={() => { newText(); }} shortcut={["Control", "e"]}/>
+			<DropdownAction label={t("menu.file")} showOnHover={false}>
+				<ClickAction label={t("menu.new")} onTrigger={() => { newText(); }} shortcut={["Control", "e"]}/>
 				{/* <ClickAction label="Open" onTrigger={() => {
 					openWindowedModal({
 						size: modalsConfig.defaultFileSelectorSize,
@@ -154,21 +156,21 @@ export function TextEditor({ file, path, setTitle, setIconUrl, close, mode, app,
 					});
 				}} shortcut={["Control", "o"]}/> */}
 				<Divider/>
-				<ClickAction label="Save" onTrigger={() => { saveText(); }} shortcut={["Control", "s"]}/>
+				<ClickAction label={t("menu.save")} onTrigger={() => { saveText(); }} shortcut={["Control", "s"]}/>
 				{/* <ClickAction label={`Reveal in ${APP_NAMES.FILE_EXPLORER}`} disabled={currentFile == null} onTrigger={() => {
 					if (windowsManager != null)	currentFile?.parent?.open(windowsManager);
 				}}/> */}
 				<Divider/>
-				<ClickAction label="Quit" onTrigger={() => { close?.(); }} shortcut={["Control", "q"]}/>
+				<ClickAction label={t("menu.quit")} onTrigger={() => { close?.(); }} shortcut={["Control", "q"]}/>
 			</DropdownAction>
-			<DropdownAction label="View" showOnHover={false}>
-				<ClickAction label={currentMode === "view" ? "Edit mode" : "Preview mode"} onTrigger={() => {
+			<DropdownAction label={t("menu.view")} showOnHover={false}>
+				<ClickAction label={currentMode === "view" ? t("menu.editMode") : t("menu.previewMode")} onTrigger={() => {
 					setCurrentMode(currentMode === "view" ? "edit" : "view");
 				}} shortcut={["Control", "u"]}/>
 				<Divider/>
-				<ClickAction label="Zoom in" onTrigger={() => { setZoom(zoom + ZOOM_FACTOR); }} shortcut={["Control", "+"]}/>
-				<ClickAction label="Zoom out" onTrigger={() => { setZoom(zoom - ZOOM_FACTOR); }} shortcut={["Control", "-"]}/>
-				<ClickAction label="Reset Zoom" disabled={zoom == DEFAULT_ZOOM} onTrigger={() => { setZoom(DEFAULT_ZOOM); }} shortcut={["Control", "0"]}/>
+				<ClickAction label={t("menu.zoomIn")} onTrigger={() => { setZoom(zoom + ZOOM_FACTOR); }} shortcut={["Control", "+"]}/>
+				<ClickAction label={t("menu.zoomOut")} onTrigger={() => { setZoom(zoom - ZOOM_FACTOR); }} shortcut={["Control", "-"]}/>
+				<ClickAction label={t("menu.resetZoom")} disabled={zoom == DEFAULT_ZOOM} onTrigger={() => { setZoom(DEFAULT_ZOOM); }} shortcut={["Control", "0"]}/>
 			</DropdownAction>
 		</HeaderMenu>
 		{currentMode === "view"
