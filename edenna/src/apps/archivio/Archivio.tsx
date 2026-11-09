@@ -3,6 +3,7 @@ import { useTranslation, type VirtualFile, type WindowProps } from "@prozilla-os
 import { archivioTranslations } from "./locales";
 import { EdocSpan, parseEdoc } from "./edoc";
 import styles from "./Archivio.module.css";
+import { useCrt } from "../../crt/crtContext";
 
 export interface ArchivioProps extends WindowProps {
 	/** File passato da Esplora risorse quando si apre un documento .edoc. */
@@ -51,6 +52,13 @@ export function Archivio({ file, setTitle }: ArchivioProps) {
 		if (document?.header.titolo)
 			setTitle?.(document.header.titolo);
 	}, [document, setTitle]);
+
+	// Intestazione "effetto: anomalia" → disturbo del segnale all'apertura del documento.
+	const { glitch } = useCrt();
+	useEffect(() => {
+		if (document?.header.effetto === "anomalia")
+			glitch(2500);
+	}, [document, glitch]);
 
 	if (!file) {
 		return <div className={styles.Empty}>
