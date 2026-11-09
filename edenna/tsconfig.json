@@ -1,0 +1,16 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": "..",
+		// Come in vite.config.ts: i pacchetti ProzillaOS si leggono dai sorgenti, non da dist/.
+		"paths": {
+			"@prozilla-os/*": ["packages/*/src/main", "packages/apps/*/src/main"]
+		},
+		"allowJs": false,
+		"checkJs": false
+	},
+	// Le dichiarazioni globali di core (es. variabili CSS negli stili inline) servono
+	// anche qui, perché tsc controlla i sorgenti dei pacchetti importati.
+	"include": ["src", "vite.config.ts", "../packages/core/src/types/*.d.ts"],
+	"exclude": ["node_modules", "dist", "release", "electron"]
+}

@@ -1,0 +1,61 @@
+# [Edenna OS] Costruisce i pacchetti Linux dell'app kiosk.
+#
+# - Ad ogni push su main e ad ogni pull request: controllo tipi + build, con i
+#   pacchetti scaricabili dalla pagina della run (sezione "Artifacts").
+# - Ad ogni tag "edenna-v*" (es. edenna-v0.2.0): crea anche una GitHub Release
+#   con .deb e AppImage allegati.
+#
+# Gli altri workflow in questa cartella vengono da ProzillaOS (vedi edenna/docs/FORK.md).
+name: Edenna OS - Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["edenna-v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  linux:
+    name: Pacchetti Linux
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Installa solo Edenna OS e i pacchetti ProzillaOS da cui dipende (niente demo/docs).
+      - name: Installa dipendenze
+        run: pnpm install --frozen-lockfile --filter "@edenna/os..."
+
+      - name: Build .deb e AppImage
+        run: pnpm run edenna:dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edenna-os-linux
+          path: |
+            edenna/release/*.deb
+            edenna/release/*.AppImage
+          if-no-files-found: error
+
+      - name: Pubblica la release
+        if: startsWith(github.ref, 'refs/tags/edenna-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            edenna/release/*.deb
+            edenna/release/*.AppImage

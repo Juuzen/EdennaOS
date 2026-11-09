@@ -48,7 +48,14 @@
 		"root:test:ci": "pnpm vitest --run",
 		"root:lint": "pnpm eslint . --fix",
 		"root:lint:nofix": "pnpm eslint .",
-		"root:report": "pnpm vite-node scripts/compatibilityReport.ts"
+		"root:report": "pnpm vite-node scripts/compatibilityReport.ts",
+		"edenna:dev": "pnpm --filter @edenna/os dev",
+		"edenna:dev:electron": "pnpm --filter @edenna/os dev:electron",
+		"edenna:typecheck": "pnpm --filter @edenna/os typecheck",
+		"edenna:build": "pnpm --filter @edenna/os build",
+		"edenna:start": "pnpm --filter @edenna/os start",
+		"edenna:start:windowed": "pnpm --filter @edenna/os start:windowed",
+		"edenna:dist": "pnpm --filter @edenna/os dist"
 	},
 	"workspaces": [
 		"packages/*",

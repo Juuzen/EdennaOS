@@ -1,0 +1,5 @@
+<!-- SEGNAPOSTO: icona provvisoria. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="#FFFFFF" stroke="#1F4FB8" stroke-width="3"/>
+  <path d="M18 14h28v36H18z" fill="none" stroke="#1F4FB8" stroke-width="3"/><path d="M23 22h18" stroke="#1F4FB8" stroke-width="3"/><rect x="23" y="28" width="18" height="5" fill="#14284B"/><path d="M23 39h10" stroke="#1F4FB8" stroke-width="3"/><rect x="35" y="37" width="6" height="5" fill="#14284B"/>
+</svg>

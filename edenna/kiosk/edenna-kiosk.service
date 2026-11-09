@@ -1,0 +1,44 @@
+# Edenna OS in modalità kiosk: avvia il compositor Wayland "cage" sul terminale tty1
+# con dentro solo Edenna OS. Niente desktop GNOME, niente Alt+Tab, niente notifiche.
+#
+# Basato sull'esempio ufficiale di cage:
+# https://github.com/cage-kiosk/cage/wiki/Starting-Cage-on-boot-with-systemd
+#
+# Installato da kiosk/install-kiosk.sh in /etc/systemd/system/edenna-kiosk.service
+
+[Unit]
+Description=Edenna OS (kiosk su cage)
+After=systemd-user-sessions.service plymouth-quit-wait.service
+After=dbus.socket systemd-logind.service
+Wants=dbus.socket systemd-logind.service
+Before=graphical.target
+ConditionPathExists=/dev/tty0
+Conflicts=getty@tty1.service
+After=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/chvt 1
+# -d: niente decorazioni lato client.
+# Aggiungere -s per permettere il cambio di terminale (Ctrl+Alt+F3) mentre l'app è aperta.
+ExecStart=/usr/bin/cage -d -- /usr/bin/edenna-os
+# Se l'app va in crash si riavvia da sola. Se lo staff la chiude con
+# Ctrl+Alt+Shift+Q (uscita "pulita") resta chiusa.
+Restart=on-failure
+RestartSec=2
+
+User=edenna
+PAMName=edenna-kiosk
+UtmpIdentifier=tty1
+UtmpMode=user
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+StandardInput=tty-fail
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=graphical.target
+Alias=display-manager.service

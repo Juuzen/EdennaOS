@@ -4,9 +4,15 @@ packages:
   - demo
   - docs
   - examples/*
+  # Edenna OS (fork): l'applicazione kiosk
+  - edenna
 allowBuilds:
   "@swc/core": true
   "esbuild": true
+  # Edenna OS: Electron scarica il suo binario da solo al primo avvio,
+  # electron-winstaller serve solo per Windows
+  "electron": false
+  "electron-winstaller": false
 overrides:
   "prozilla-os": "workspace:*"
   "@prozilla-os/core": "workspace:*"

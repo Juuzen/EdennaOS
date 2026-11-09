@@ -1,0 +1,44 @@
+# Configurazione di electron-builder: impacchetta l'app per Ubuntu.
+# Docs: https://www.electron.build/configuration
+appId: it.frattura.edenna-os
+productName: Edenna OS
+copyright: Frattura LARP
+
+directories:
+  output: release
+  buildResources: build
+
+# Cosa finisce dentro il pacchetto: solo il processo Electron compilato e la build di Vite.
+# (Le dipendenze React/ProzillaOS sono già incluse nel bundle di dist/.)
+files:
+  - dist/**/*
+  - build/icon.png
+  - package.json
+  - "!node_modules/**/*"
+
+linux:
+  target:
+    - deb
+    - AppImage
+  # Nome dell'eseguibile: il .deb crea il collegamento /usr/bin/edenna-os
+  executableName: edenna-os
+  syncDesktopName: true
+  icon: build/icon.png
+  category: Utility
+  maintainer: Juuzen
+  synopsis: Edenna OS — terminale kiosk per il LARP Frattura
+  desktop:
+    entry:
+      Name: Edenna OS
+      Comment: Terminale operativo Edenna Industries
+
+deb:
+  # Il nome npm (@edenna/os) non è valido come nome di pacchetto Debian.
+  packageName: edenna-os
+  # cage è il compositor usato per la modalità kiosk (vedi kiosk/README.md)
+  recommends:
+    - cage
+
+publish: null
+
+artifactName: edenna-os_${version}_${arch}.${ext}

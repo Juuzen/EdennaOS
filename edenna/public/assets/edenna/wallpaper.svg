@@ -1,0 +1,20 @@
+<!-- SEGNAPOSTO: sfondo Edenna provvisorio. Sostituire con l'artwork definitivo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F4F7FB"/>
+      <stop offset="1" stop-color="#DCE5F2"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#C9D5E6" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#grid)" opacity="0.6"/>
+  <g transform="translate(960 500)" opacity="0.9">
+    <rect x="-56" y="-56" width="112" height="112" rx="26" fill="#1F4FB8"/>
+    <path d="M-24-36h48v12H-10v10h28v12H-10v10h34v12h-48z" fill="#FFFFFF"/>
+    <text y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="34" font-weight="600" letter-spacing="10" fill="#14284B">EDENNA INDUSTRIES</text>
+    <text y="150" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="18" letter-spacing="6" fill="#5A6B85">DIVISIONE ALTROVE · TERMINALE OPERATIVO</text>
+  </g>
+</svg>

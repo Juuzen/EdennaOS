@@ -1,0 +1,70 @@
+/*
+ * Tema Edenna OS (SEGNAPOSTO).
+ * Palette provvisoria "corporate": bianco e blu. Da sostituire con il design system definitivo.
+ */
+
+html,
+body,
+#root {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+}
+
+:root {
+	/* Colori Edenna */
+	--edenna-blue: #1F4FB8;
+	--edenna-blue-dark: #14284B;
+	--edenna-ink: #14284B;
+	--edenna-ink-muted: #5A6B85;
+	--edenna-line: #C9D5E6;
+	--edenna-paper: #FFFFFF;
+	--edenna-paper-bg: #E8EEF6;
+	--edenna-red: #B3261E;
+
+	/* Font: IBM Plex al posto di Outfit / Roboto Mono */
+	--body-font-family: "IBM Plex Sans", system-ui, sans-serif;
+	--mono-font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* Il tema viene applicato da ProzillaOS come classe su un contenitore: Theme.Light → .Light-theme */
+#root .Light-theme {
+	--foreground-color-0: #14284B;
+	--foreground-color-1: #2E436A;
+	--foreground-color-2: #5A6B85;
+
+	--background-color-0: #FFFFFF;
+	--background-color-1: #F4F7FB;
+	--background-color-2: #E3EAF4;
+	--background-color-3: #D5DFED;
+	--background-color-4: #C3D0E3;
+
+	--taskbar-color: #FFFFFF;
+	--taskbar-opacity: 0.92;
+	--taskbar-menu-color: #FFFFFF;
+	--taskbar-button-hover-color: rgba(31, 79, 184, 0.08);
+
+	--border-radius-0: 0.1rem;
+	--border-radius-1: 0.2rem;
+}
+
+/* Kiosk: niente cursore di testo o selezione accidentale fuori dai documenti. */
+#root {
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+/*
+ * Etichette delle icone sul desktop: ProzillaOS le scrive in bianco con ombra,
+ * illeggibili su uno sfondo chiaro. ProzillaOS usa CSS Modules (classi tipo
+ * "_Item_1au3h_38"), quindi si aggancia la parte stabile del nome.
+ * Se un aggiornamento di prozilla-os cambia i nomi, ricontrollare questa regola.
+ */
+#root .Light-theme [class*="_Desktop_"] [class*="_Item_"] {
+	text-shadow: none;
+}
+
+#root .Light-theme [class*="_Desktop_"] [class*="_Item_"] p {
+	color: var(--edenna-ink);
+}

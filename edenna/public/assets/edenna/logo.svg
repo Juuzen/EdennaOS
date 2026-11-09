@@ -1,0 +1,5 @@
+<!-- SEGNAPOSTO: logo Edenna Industries provvisorio. Sostituire con il logo definitivo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#1F4FB8"/>
+  <path d="M20 18h24v6H27v5h14v6H27v5h17v6H20z" fill="#FFFFFF"/>
+</svg>
