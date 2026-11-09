@@ -338,6 +338,9 @@ importers:
       '@fontsource/ibm-plex-sans':
         specifier: ^5.3.0
         version: 5.3.0
+      '@fortawesome/free-solid-svg-icons':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@prozilla-os/core':
         specifier: workspace:*
         version: link:../packages/core
@@ -386,6 +389,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      vault66-crt-effect:
+        specifier: 3.1.1
+        version: 3.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vue@3.5.34(typescript@5.9.3))
       vite:
         specifier: ^7.3.2
         version: 7.3.2(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.8.4)
@@ -6009,6 +6015,20 @@ packages:
       '@types/react':
         optional: true
       react:
+        optional: true
+
+  vault66-crt-effect@3.1.1:
+    resolution: {integrity: sha512-piSVW3wnwO2AGEzwjJ7k8DWF5dxN6edjjtz8jWZxsqkDAHihdE905M150jP9v0U5HdXSgUI0Aa4q83/VJ3/JSg==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      vue: '>=3.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      vue:
         optional: true
 
   vfile-message@4.0.3:
@@ -11656,6 +11676,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.28
       react: 18.3.1
+
+  vault66-crt-effect@3.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vue@3.5.34(typescript@5.9.3)):
+    optionalDependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      vue: 3.5.34(typescript@5.9.3)
 
   vfile-message@4.0.3:
     dependencies:

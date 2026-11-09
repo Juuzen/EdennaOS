@@ -8,6 +8,7 @@
  *   titolo: Benvenuto nella Divisione Altrove
  *   classificazione: RISERVATO
  *   data: 12/03/2031
+ *   effetto: anomalia        ← facoltativo: disturbo del segnale CRT all'apertura
  *   ---
  *   # Titolo di sezione
  *   Testo normale, con una parte [[censurata]].

@@ -33,6 +33,8 @@ pnpm run edenna:dist           # pacchetti .deb e AppImage in edenna/release/
 - **[edenna/docs/FORK.md](../edenna/docs/FORK.md)** — come funziona il fork, file ProzillaOS modificati, aggiornamenti da upstream
 - **[edenna/docs/KIOSK.md](../edenna/docs/KIOSK.md)** — installare la postazione kiosk su Ubuntu
 - **[edenna/docs/CONTENUTI.md](../edenna/docs/CONTENUTI.md)** — documenti `.edoc`, filesystem virtuale, app custom, grafica
+- **[edenna/docs/I18N.md](../edenna/docs/I18N.md)** — lingue (italiano/inglese), dove stanno i testi, voce Edenna
+- **[edenna/docs/CRT.md](../edenna/docs/CRT.md)** — effetto monitor CRT: studio, modalità, prestazioni
 
 ## Scorciatoie staff
 
@@ -40,6 +42,8 @@ pnpm run edenna:dist           # pacchetti .deb e AppImage in edenna/release/
 |---|---|
 | Ctrl+Alt+Shift+R | Reset della sessione |
 | Ctrl+Alt+Shift+Q | Chiude l'app |
+| Ctrl+Alt+Shift+E | Effetto CRT: modalità successiva (spento → terminale → anomalia) |
+| Ctrl+Alt+Shift+G | Effetto CRT: anomalia per 3 secondi |
 
 ## Licenze
 

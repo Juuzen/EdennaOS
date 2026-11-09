@@ -3,7 +3,7 @@ import styles from "./WindowView.module.css";
 import { faCircleRight, faExpand, faMinus, faWindowMaximize as fasWindowMaximize, faTimes, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useWindowsManager } from "../../hooks/windows/windowsManagerContext";
 import Draggable from "react-draggable";
-import { FC, memo, MouseEventHandler, useCallback, useEffect, useRef, useState } from "react";
+import { Dispatch, FC, memo, MouseEventHandler, SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { faWindowMaximize } from "@fortawesome/free-regular-svg-icons";
 import utilStyles from "../../styles/utils.module.css";
 import { useContextMenu } from "../../hooks/modals/contextMenu";
@@ -21,7 +21,7 @@ import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { WindowFallbackView } from "./WindowFallbackView";
 import { WindowOptions } from "../../features/windows/windowsManager";
 import { ModalProps } from "../modals/ModalView";
-import { useClassNames, useSystemManager } from "../../hooks";
+import { useClassNames, useSystemManager, useTranslation } from "../../hooks";
 import { VectorImage } from "../_utils/vector-image/VectorImage";
 import { Vector2 } from "@prozilla-os/shared";
 
@@ -63,24 +63,30 @@ export const WindowView: FC<WindowProps> = memo(({ id, app, size, position, opti
 	const [startPosition, setStartPosition] = useState(position);
 	const [maximized, setMaximized] = useState(fullscreen ?? false);
 	const [screenWidth, screenHeight] = useScreenDimensions();
-	const [title, setTitle] = useState(app?.name ?? "");
+	// [Edenna] Until the app sets its own title, show the (translated) app name.
+	const { t } = useTranslation();
+	const [customTitle, setCustomTitle] = useState<string | null>(null);
+	const title = customTitle ?? app?.name ?? "";
+	const setTitle = useCallback<Dispatch<SetStateAction<string>>>((value) => {
+		setCustomTitle((previous) => typeof value === "function" ? value(previous ?? app?.name ?? "") : value);
+	}, [app]);
 	const [iconUrl, setIconUrl] = useState<string>(app ? appsConfig.getAppById(app.id)?.iconUrl ?? "" : "");
 	const zIndex = useZIndex({ groupIndex: ZIndexManager.GROUPS.WINDOWS, index: index ?? 0 });
 
 	const { onContextMenu, ShortcutsListener } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
-			<ClickAction label="Minimize" icon={faMinus} onTrigger={() => { toggleMinimized?.(); }}/>
-			<ClickAction label="Maximize" icon={faExpand} shortcut={["F11"]} onTrigger={() => {
+			<ClickAction label={t("window.minimize")} icon={faMinus} onTrigger={() => { toggleMinimized?.(); }}/>
+			<ClickAction label={t("window.maximize")} icon={faExpand} shortcut={["F11"]} onTrigger={() => {
 				setMaximized(!maximized);
 			}}/>
-			<ClickAction label="Close" icon={faTimes} shortcut={["Control", "q"]} onTrigger={() => {
+			<ClickAction label={t("window.close")} icon={faTimes} shortcut={["Control", "q"]} onTrigger={() => {
 				close?.();
 			}}/>
 			<Divider/>
-			<ClickAction label="Standalone mode" icon={faCircleRight} onTrigger={() => {
+			<ClickAction label={t("window.standalone")} icon={faCircleRight} onTrigger={() => {
 				if (app != null) openUrl(generateUrl({ appId: app.id, standalone: true }), "_self");
 			}}/>
-			<ClickAction label={"Share"} icon={ModalsManager.getModalIconUrl("share")} shortcut={["Alt", "s"]} onTrigger={() => {
+			<ClickAction label={t("actions.share")} icon={ModalsManager.getModalIconUrl("share")} shortcut={["Alt", "s"]} onTrigger={() => {
 				if (app != null)
 					openWindowedModal({
 						appId: app.id,
@@ -198,14 +204,14 @@ export const WindowView: FC<WindowProps> = memo(({ id, app, size, position, opti
 							src={iconUrl}
 						/>
 						<p className={useClassNames([utilStyles.TextSemibold], "WindowTitle")}>{title}</p>
-						<button aria-label="Minimize" className={styles["Header-button"]} tabIndex={0} id="minimize-window"
+						<button aria-label={t("window.minimize")} className={styles["Header-button"]} tabIndex={0} id="minimize-window"
 							onClick={(event) => { toggleMinimized?.(event as unknown as Event); }}
 						>
 							<FontAwesomeIcon icon={faMinus}/>
 						</button>
 						{screenWidth != null && screenHeight != null
 							&& screenWidth > windowsConfig.minScreenSize.x && screenHeight > windowsConfig.minScreenSize.y
-							? <button aria-label="Maximize" className={styles["Header-button"]} tabIndex={0} id="maximize-window"
+							? <button aria-label={t("window.maximize")} className={styles["Header-button"]} tabIndex={0} id="maximize-window"
 								onClick={(event) => {
 									event.preventDefault();
 									setMaximized(!maximized);
@@ -216,7 +222,7 @@ export const WindowView: FC<WindowProps> = memo(({ id, app, size, position, opti
 							</button>
 							: null
 						}
-						<button aria-label="Close" className={`${styles["Header-button"]} ${styles["Exit-button"]}`} tabIndex={0} id="close-window"
+						<button aria-label={t("window.close")} className={`${styles["Header-button"]} ${styles["Exit-button"]}`} tabIndex={0} id="close-window"
 							onClick={close}>
 							<FontAwesomeIcon icon={faXmark}/>
 						</button>

@@ -1,6 +1,8 @@
 import type { VirtualDriveConfigOptions, VirtualFolder, VirtualRoot } from "@prozilla-os/core";
 import { FILE_SCHEMES } from "@prozilla-os/core";
 import { archivio } from "../apps/archivio";
+import { faDesktop, faFileLines, faHouse } from "@fortawesome/free-solid-svg-icons";
+import { localized } from "../locales";
 
 /**
  * Cartella home dell'utente nel filesystem virtuale.
@@ -53,6 +55,12 @@ function loadEdennaData(virtualRoot: VirtualRoot) {
 export const virtualDriveConfig: Partial<VirtualDriveConfigOptions> = {
 	// Nessuna persistenza: ad ogni avvio il sistema riparte pulito.
 	saveData: false,
+	// Cartelle nella barra laterale di Gestione risorse e (con showInHomeMenu) nel menu Home.
+	quickAccess: [
+		{ label: localized("places.workstation"), path: HOME_PATH, icon: faHouse },
+		{ label: localized("places.desktop"), path: `${HOME_PATH}/Desktop`, icon: faDesktop },
+		{ label: localized("places.documents"), path: `${HOME_PATH}/Documenti`, icon: faFileLines, showInHomeMenu: true },
+	],
 	defaultData: {
 		// Disattiva i contenuti dimostrativi di ProzillaOS (alcuni sono online).
 		includePicturesFolder: false,

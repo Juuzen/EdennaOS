@@ -89,6 +89,7 @@ edenna/
       virtualDrive.ts     contenuto del filesystem virtuale
     apps/archivio/        app di esempio: visualizzatore di documenti censurati
     styles/edenna.css     tema (colori, font)
+    locales/              testi Edenna e "voce Edenna" (vedi I18N.md)
     kioskGuards.ts        protezioni lato pagina
   public/
     assets/edenna/        grafica (SEGNAPOSTO)

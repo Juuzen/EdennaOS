@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./TaskbarHomeMenu.module.css";
 import appStyles from "../TaskbarMenus.module.css";
-import { faCircleInfo, faFileLines, faGear, faImage, faPowerOff } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faFolder, faGear, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import { ReactSVG } from "react-svg";
 import { useEffect, useState } from "react";
-import { useClassNames, useInstalledApps, useKeyboardListener, useSystemManager, useVirtualRoot, useWindowsManager } from "../../../hooks";
+import { useClassNames, useInstalledApps, useKeyboardListener, useQuickAccessLabel, useSystemManager, useTranslation, useVirtualRoot, useWindowsManager } from "../../../hooks";
 import { AppsConfig, closeViewport } from "../../../features";
 import { utilStyles } from "../../../styles";
 import { Vector2 } from "@prozilla-os/shared";
@@ -14,7 +14,9 @@ import { useTaskbarContext } from "../taskbarSlots";
 export function TaskbarHomeMenu() {
 	const { activeMenu, setActiveMenu, toggleMenu } = useTaskbarContext();
 	const active = activeMenu === "home";
-	const { systemName, appsConfig, skin } = useSystemManager();
+	const { systemName, appsConfig, skin, virtualDriveConfig } = useSystemManager();
+	const { t } = useTranslation(); // [Edenna]
+	const getPlaceLabel = useQuickAccessLabel();
 	const windowsManager = useWindowsManager();
 	const virtualRoot = useVirtualRoot();
 	const [tabIndex, setTabIndex] = useState(active ? 0 : -1);
@@ -56,15 +58,17 @@ export function TaskbarHomeMenu() {
 	const fileExplorerApp = appsConfig.getAppByRole(AppsConfig.APP_ROLES.fileExplorer);
 	const settingsApp = appsConfig.getAppByRole(AppsConfig.APP_ROLES.settings);
 	const textEditorApp = appsConfig.getAppByRole(AppsConfig.APP_ROLES.textEditor);
+	// [Edenna] Only show the info button if the info file exists.
+	const infoFile = virtualRoot?.navigate("~/Documents/Info.md");
 
 	const appButtonClassName = useClassNames([appStyles.AppButton], "SearchMenu", "AppButton");
 
 	return <div className={classNames.join(" ")}>
 		<div className={useClassNames([styles.HomeMenu], "Taskbar", "Menu", "Home")}>
 			<div className={useClassNames([styles.Buttons], "HomeMenu", "Buttons")}>
-				<button tabIndex={tabIndex} onClick={() => { closeViewport(true, systemName); }}>
+				<button tabIndex={tabIndex} onClick={() => { closeViewport(true, systemName, t("home.shutDownConfirm", { system: systemName })); }}>
 					<FontAwesomeIcon icon={faPowerOff}/>
-					<p className={utilStyles.TextRegular}>Shut down</p>
+					<p className={utilStyles.TextRegular}>{t("home.shutDown")}</p>
 				</button>
 				{settingsApp != null &&
 					<button tabIndex={tabIndex} onClick={() => {
@@ -72,38 +76,35 @@ export function TaskbarHomeMenu() {
 						windowsManager?.open("settings");
 					}}>
 						<FontAwesomeIcon icon={faGear}/>
-						<p className={utilStyles.TextRegular}>Settings</p>
+						<p className={utilStyles.TextRegular}>{t("home.settings")}</p>
 					</button>
 				}
-				{textEditorApp != null &&
+				{textEditorApp != null && infoFile != null &&
 					<button tabIndex={tabIndex} onClick={() => {
 						toggleMenu("home", false);
 						windowsManager?.open("text-editor", {
 							mode: "view",
-							file: virtualRoot?.navigate("~/Documents/Info.md"),
+							file: infoFile,
 							size: new Vector2(575, 675),
 						});
 					}}>
 						<FontAwesomeIcon icon={faCircleInfo}/>
-						<p className={utilStyles.TextRegular}>Info</p>
+						<p className={utilStyles.TextRegular}>{t("home.info")}</p>
 					</button>
 				}
-				{fileExplorerApp != null && <>
-					<button tabIndex={tabIndex} onClick={() => {
-						toggleMenu("home", false);
-						windowsManager?.open(fileExplorerApp.id, { path: "~/Pictures" });
-					}}>
-						<FontAwesomeIcon icon={faImage}/>
-						<p className={utilStyles.TextRegular}>Images</p>
-					</button>
-					<button tabIndex={tabIndex} onClick={() => {
-						toggleMenu("home", false);
-						windowsManager?.open(fileExplorerApp.id, { path: "~/Documents" }); }
-					}>
-						<FontAwesomeIcon icon={faFileLines}/>
-						<p className={utilStyles.TextRegular}>Documents</p>
-					</button>
-				</>}
+				{/* [Edenna] Places come from virtualDriveConfig.quickAccess. */}
+				{fileExplorerApp != null && virtualDriveConfig.quickAccess
+					.filter((place) => place.showInHomeMenu)
+					.map((place) =>
+						<button key={place.path} tabIndex={tabIndex} onClick={() => {
+							toggleMenu("home", false);
+							windowsManager?.open(fileExplorerApp.id, { path: place.path });
+						}}>
+							<FontAwesomeIcon icon={place.icon ?? faFolder}/>
+							<p className={utilStyles.TextRegular}>{getPlaceLabel(place)}</p>
+						</button>
+					)
+				}
 			</div>
 			<div className={useClassNames([styles.Apps], "HomeMenu", "Apps")}>
 				<span className={useClassNames([styles.Logo], "HomeMenu", "Logo")}>

@@ -4,9 +4,10 @@ import { HTMLAttributeAnchorTarget } from "react";
  * Simulates closing the viewport by opening a blank page.
  * @param requireConfirmation - Whether to require confirmation before closing. 
  * @param name - Name of the app.
+ * @param confirmMessage - [Edenna] Text of the (translated) confirmation. Defaults to an English text.
  */
-export function closeViewport(requireConfirmation: boolean = false, name: string) {
-	if (requireConfirmation && window.confirm(`Are you sure you want to shut down ${name}?`)) {
+export function closeViewport(requireConfirmation: boolean = false, name: string, confirmMessage?: string) {
+	if (requireConfirmation && window.confirm(confirmMessage ?? `Are you sure you want to shut down ${name}?`)) {
 		console.info("Closing viewport");
 		window.open("about:blank", "_self");
 	}

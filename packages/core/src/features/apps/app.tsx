@@ -3,6 +3,16 @@ import { FC } from "react";
 import { APP_CATEGORIES } from "../../constants/apps.const";
 import { mergeDeep, Vector2 } from "@prozilla-os/shared";
 import { Skin } from "@prozilla-os/skins";
+import type { I18n } from "../i18n/i18n";
+import type { TranslationDefinition, TranslationTree } from "../i18n/types";
+
+/**
+ * [Edenna] Minimum structure of the translations of an app: the name and description of the app
+ * are read from the keys `app.name` and `app.description` (optional).
+ */
+export interface AppTranslationTree extends TranslationTree {
+	app: { name: string; description?: string };
+}
 
 const validIdRegex = /^[a-zA-Z0-9-]+$/;
 
@@ -114,6 +124,11 @@ export class App<AppProps extends WindowProps = WindowProps> {
 	 * @see {@link addSkinOverride}
 	 */
 	public skinOverrides?: Map<typeof Skin, AppSkinOverrides<AppProps>>;
+
+	/** [Edenna] Translations of this app, see {@link App.setTranslations}. */
+	translations?: TranslationDefinition;
+	#nameFromSkin = false;
+	#descriptionFromSkin = false;
 
 	isActive: boolean = false;
 	isPinned?: boolean;
@@ -243,6 +258,28 @@ export class App<AppProps extends WindowProps = WindowProps> {
 	 * @param skinOverrides - The skin overrides to assign to this app.
 	 * @see {@link skinOverrides}
 	 */
+	/**
+	 * [Edenna] Sets the translations of this app.
+	 * The name and description are then translated automatically when the language changes,
+	 * unless the skin overrides them.
+	 */
+	setTranslations<T extends AppTranslationTree>(translations: TranslationDefinition<T>): this {
+		this.translations = translations;
+		return this;
+	}
+
+	/** [Edenna] Applies the current language to the name and description of this app. */
+	applyLocale(i18n: I18n) {
+		const translations = this.translations;
+		if (translations == null)
+			return;
+
+		if (!this.#nameFromSkin)
+			this.name = i18n.translateUnchecked(translations, "app.name");
+		if (!this.#descriptionFromSkin && i18n.has(translations, "app.description"))
+			this.description = i18n.translateUnchecked(translations, "app.description");
+	}
+
 	setSkinOverrides(skinOverrides: App<AppProps>["skinOverrides"]): this {
 		this.skinOverrides = skinOverrides;
 		return this;
@@ -265,8 +302,10 @@ export class App<AppProps extends WindowProps = WindowProps> {
 	}
 
 	applySkin(skin: Skin) {
-		if (skin.appNames && Object.keys(skin.appNames).includes(this.id))
+		if (skin.appNames && Object.keys(skin.appNames).includes(this.id)) {
 			this.setName(skin.appNames[this.id]);
+			this.#nameFromSkin = true;
+		}
 		if (skin.appIcons && Object.keys(skin.appIcons).includes(this.id))
 			this.setIconUrl(skin.appIcons[this.id]);
 
@@ -284,12 +323,16 @@ export class App<AppProps extends WindowProps = WindowProps> {
 	}
 
 	private applySkinOverrides(skin: Skin, overrides: AppSkinOverrides<AppProps>) {
-		if (overrides.name)
+		if (overrides.name) {
 			this.name = overrides.name;
+			this.#nameFromSkin = true;
+		}
 		if (overrides.iconUrl)
 			this.iconUrl = skin.resolveAssetUrl(overrides.iconUrl);
-		if (overrides.description)
+		if (overrides.description) {
 			this.description = overrides.description;
+			this.#descriptionFromSkin = true;
+		}
 		if (overrides.windowContent)
 			this.windowContent = overrides.windowContent;
 		if (overrides.windowOptions)

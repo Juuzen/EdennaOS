@@ -43,6 +43,8 @@ Lo script:
 |---|---|
 | Resettare la postazione tra un giocatore e l'altro | **Ctrl+Alt+Shift+R**: chiude tutte le finestre e ricarica il sistema da zero. |
 | Chiudere Edenna OS | **Ctrl+Alt+Shift+Q**. Il servizio non lo riavvia (è un'uscita voluta). |
+| Cambiare l'effetto CRT | **Ctrl+Alt+Shift+E**: spento → terminale → anomalia (vedi [CRT.md](CRT.md)). |
+| Lanciare un'anomalia | **Ctrl+Alt+Shift+G**: disturbo del segnale per 3 secondi. |
 | Accedere al terminale dopo la chiusura | **Ctrl+Alt+F3** e login con l'account amministratore. |
 | Riavviare il kiosk | `sudo systemctl restart edenna-kiosk` |
 | Vedere i log | `journalctl -u edenna-kiosk -f` |

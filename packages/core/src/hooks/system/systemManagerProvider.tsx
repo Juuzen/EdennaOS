@@ -14,6 +14,7 @@ export interface SystemManagerProviderProps {
 	trackingConfig: SystemManagerParams["trackingConfig"];
 	windowsConfig: SystemManagerParams["windowsConfig"];
 	virtualDriveConfig: SystemManagerParams["virtualDriveConfig"];
+	localeConfig?: SystemManagerParams["localeConfig"];
 	children: ReactNode;
 }
 

@@ -12,34 +12,37 @@ import { faSquareCheck } from "@fortawesome/free-solid-svg-icons";
 import { useAlert } from "../../../hooks/modals/alert";
 import { ModalProps } from "../ModalView";
 import { useScrollWithShadow } from "../../../hooks/_utils/scrollWithShadows";
-import { useSystemManager } from "../../../hooks";
+import { useSystemManager, useTranslation } from "../../../hooks";
+import type { TranslationKey } from "../../../features/i18n/types";
+import type { CoreTranslationTree } from "../../../locales";
 
-const APP_OPTIONS: Record<string, { label: string, name: string }[]> = {
+// [Edenna] Labels are keys of the core translations.
+const APP_OPTIONS: Record<string, { label: TranslationKey<CoreTranslationTree>, name: string }[]> = {
 	"terminal": [
 		{
-			label: "Command",
+			label: "share.command",
 			name: "input",
 		},
 		{
-			label: "Path",
+			label: "share.path",
 			name: "path",
 		},
 	],
 	"browser": [
 		{
-			label: "Website",
+			label: "share.website",
 			name: "url",
 		},
 	],
 	"file-explorer": [
 		{
-			label: "Path",
+			label: "share.path",
 			name: "path",
 		},
 	],
 	"text-editor": [
 		{
-			label: "Path",
+			label: "share.path",
 			name: "path",
 		},
 	],
@@ -47,6 +50,7 @@ const APP_OPTIONS: Record<string, { label: string, name: string }[]> = {
 
 export function Share({ modal, params, ...props }: ModalProps) {
 	const { appsConfig } = useSystemManager();
+	const { t } = useTranslation(); // [Edenna]
 	const [appId, setAppId] = useState<string>(params?.appId ?? "");
 	const [fullscreen, setFullscreen] = useState<boolean>(params?.fullscreen ?? false);
 	const [standalone, setStandalone] = useState<boolean>(params?.standalone ?? false);
@@ -108,11 +112,11 @@ export function Share({ modal, params, ...props }: ModalProps) {
 
 	return <WindowedModal className={styles.Share} modal={modal} params={{
 		...params,
-		title: "Share",
+		title: t("share.title"),
 		iconUrl: ModalsManager.getModalIconUrl("share"),
 	}} {...props}>
 		<div className={styles.Top}>
-			<h1 className={styles.Title}>Share options</h1>
+			<h1 className={styles.Title}>{t("share.options")}</h1>
 			<div className={styles.FormContainer} style={{ boxShadow }}>
 				<form
 					className={styles.Form}
@@ -120,16 +124,16 @@ export function Share({ modal, params, ...props }: ModalProps) {
 					ref={formRef}
 				>
 					<label className={styles.Label}>
-						<p>App:</p>
+						<p>{t("share.app")}</p>
 						<select className={styles.Input} name="app" value={appId} onChange={onAppIdChange as unknown as ChangeEventHandler}>
-							<option value={""}>(None)</option>
+							<option value={""}>{t("share.none")}</option>
 							{appsConfig.apps.map(({ name, id }) =>
 								<option key={id} value={id}>{name}</option>
 							)}
 						</select>
 					</label>
 					{appId !== "" ? <label className={styles.Label}>
-						<p>Standalone:</p>
+						<p>{t("share.standalone")}</p>
 						<input
 							className={styles.Input}
 							name="standalone"
@@ -155,7 +159,7 @@ export function Share({ modal, params, ...props }: ModalProps) {
 							value={fullscreen.toString()}
 							onChange={onFullscreenChange as unknown as ChangeEventHandler}
 						/>
-						<p>Fullscreen:</p>
+						<p>{t("share.fullscreen")}</p>
 						<div className={styles.Checkbox}>
 							{fullscreen 
 								? <FontAwesomeIcon icon={faSquareCheck}/>
@@ -165,7 +169,7 @@ export function Share({ modal, params, ...props }: ModalProps) {
 					</label> : null}
 					{/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
 					{APP_OPTIONS[appId]?.map(({ label, name }) =>
-						<Option key={name} name={name} label={label} setOption={setOption}/>
+						<Option key={name} name={name} label={t(label)} setOption={setOption}/>
 					)}
 				</form>
 			</div>
@@ -177,20 +181,20 @@ export function Share({ modal, params, ...props }: ModalProps) {
 				onClick={() => {
 					copyToClipboard(url as string, () => {
 						alert({
-							title: "Share",
+							title: t("share.title"),
 							iconUrl: ModalsManager.getModalIconUrl("share"),
-							text: "Copied to clipboard!",
+							text: t("share.copied"),
 						});
 					}, () => {
 						alert({
-							title: "Share",
+							title: t("share.title"),
 							iconUrl: ModalsManager.getModalIconUrl("share"),
-							text: "Failed to copy.",
+							text: t("share.copyFailed"),
 						});
 					});
 				}}
 			>
-				Copy
+				{t("share.copy")}
 			</Button>
 		</div>
 	</WindowedModal>;

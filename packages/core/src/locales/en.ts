@@ -1,0 +1,100 @@
+// [Edenna] Reference translation of the core interface. See edenna/docs/I18N.md.
+import { plural } from "../features/i18n/define";
+import { TranslationTree } from "../features/i18n/types";
+
+export const en = {
+	desktop: {
+		view: "View",
+		smallIcons: "Small icons",
+		mediumIcons: "Medium icons",
+		largeIcons: "Large icons",
+		alignVertically: "Align vertically",
+		alignHorizontally: "Align horizontally",
+		showIcons: "Show desktop icons",
+		reload: "Reload",
+		enterFullscreen: "Enter fullscreen",
+		exitFullscreen: "Exit fullscreen",
+		changeAppearance: "Change appearance",
+		wallpaper: "Desktop wallpaper",
+	},
+	actions: {
+		open: "Open",
+		openIn: "Open in {app}",
+		openApp: "Open {app}",
+		revealIn: "Reveal in {app}",
+		delete: "Delete",
+		share: "Share",
+		ok: "Ok",
+		alert: "Alert",
+	},
+	window: {
+		minimize: "Minimize",
+		maximize: "Maximize",
+		close: "Close",
+		closeWindow: "Close window",
+		standalone: "Standalone mode",
+		stoppedWorking: "{app} has stopped working",
+		unknownError: "Unknown error",
+	},
+	home: {
+		title: "Home",
+		shutDown: "Shut down",
+		shutDownConfirm: "Are you sure you want to shut down {system}?",
+		settings: "Settings",
+		info: "Info",
+	},
+	search: {
+		title: "Search",
+		query: "Search query",
+		placeholder: "Search...",
+	},
+	indicators: {
+		showDesktop: "Show desktop",
+		network: "Network",
+		connected: "Connected",
+		volume: "Volume",
+		battery: "Battery",
+		calendar: "Date & time",
+		language: "Language: {language}",
+		switchLanguage: "Switch to {language}",
+	},
+	places: {
+		home: "Home",
+		desktop: "Desktop",
+		images: "Images",
+		documents: "Documents",
+	},
+	share: {
+		title: "Share",
+		options: "Share options",
+		app: "App:",
+		standalone: "Standalone:",
+		fullscreen: "Fullscreen:",
+		command: "Command",
+		path: "Path",
+		website: "Website",
+		copied: "Copied to clipboard!",
+		copyFailed: "Failed to copy.",
+		copy: "Copy",
+		none: "(None)",
+	},
+	standalone: {
+		exit: "Exit",
+	},
+	notFound: {
+		title: "404: Not Found",
+		home: "Home",
+	},
+	fileTypes: {
+		unknown: "Unknown file",
+		known: "{type} file (.{extension})",
+		other: "File (.{extension})",
+		png: "PNG image",
+		txt: "Text",
+		md: "Markdown source",
+		xml: "XML source",
+	},
+	items: plural({ one: "{count} item", other: "{count} items" }),
+} satisfies TranslationTree;
+
+export type CoreTranslationTree = typeof en;

@@ -4,6 +4,7 @@ import { useWindowedModal } from "./windowedModal";
 import { ModalProps } from "../../components/modals/ModalView";
 import { ModalsConfig } from "../../features";
 import { Vector2 } from "@prozilla-os/shared";
+import { useTranslation } from "../i18n/translation";
 
 export interface AlertParams {
 	/**
@@ -26,20 +27,21 @@ export interface AlertParams {
 /** Returns a function that opens an alert modal. */
 export function useAlert(): { alert: (params: AlertParams) => void } {
 	const { openWindowedModal } = useWindowedModal();
+	const { t } = useTranslation(); // [Edenna]
 
 	const alert = useCallback(({ title, text, iconUrl, size, single }: AlertParams) => {
 		openWindowedModal({
-			title: title ?? "Alert",
+			title: title ?? t("actions.alert"),
 			iconUrl,
 			size: size ?? new Vector2(300, 150),
 			single,
 			Modal: (props: ModalProps) =>
 				<DialogBox {...props}>
 					<p>{text}</p>
-					<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>Ok</button>
+					<button data-type={ModalsConfig.DIALOG_CONTENT_TYPES.closeButton}>{t("actions.ok")}</button>
 				</DialogBox>,
 		});
-	}, [openWindowedModal]);
+	}, [openWindowedModal, t]);
 	
 	return { alert };
 }

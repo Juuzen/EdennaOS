@@ -8,9 +8,11 @@ import utilStyles from "../../../styles/utils.module.css";
 import { ModalProps } from "../ModalView";
 import { VectorImage } from "../../_utils/vector-image/VectorImage";
 import { Vector2 } from "@prozilla-os/shared";
+import { useTranslation } from "../../../hooks/i18n/translation";
 
 export function WindowedModal({ modal, params, children, ...props }: ModalProps) {
 	const nodeRef = useRef(null);
+	const { t } = useTranslation(); // [Edenna]
 
 	const [startPosition, setStartPosition] = useState(modal?.position);
 	const [screenWidth, screenHeight] = useScreenDimensions();
@@ -58,7 +60,7 @@ export function WindowedModal({ modal, params, children, ...props }: ModalProps)
 					src={params?.iconUrl}
 				/>
 				<p className={utilStyles.TextSemibold}>{params?.title as string}</p>
-				<button aria-label="Close" className={`${styles["Header-button"]} ${styles["Exit-button"]}`} tabIndex={0}
+				<button aria-label={t("window.close")} className={`${styles["Header-button"]} ${styles["Exit-button"]}`} tabIndex={0}
 					onClick={() => { modal?.close(); }}>
 					<FontAwesomeIcon icon={faXmark}/>
 				</button>

@@ -1,11 +1,13 @@
 import { App, AppsConfig } from "@prozilla-os/core";
 import { FileExplorer, type FileExplorerProps } from "./components/FileExplorer";
 import { Skin, MacOsSkin, Windows95Skin, MinimalSkin, PixelSkin } from "@prozilla-os/skins";
+import { fileExplorerTranslations } from "./locales";
 
 const fileExplorer = new App<FileExplorerProps>("File Explorer", "file-explorer", FileExplorer)
 	.setIconUrl("https://os.prozilla.dev/assets/apps/icons/file-explorer.svg")
 	.setRole(AppsConfig.APP_ROLES.fileExplorer)
 	.setCategory("Utilities & tools")
+	.setTranslations(fileExplorerTranslations) // [Edenna]
 	.addSkinOverride(MacOsSkin, { 
 		name: "Finder", 
 		iconUrl: Skin.assetUrl("/assets/skins/mac/apps/icons/file-explorer.svg"),
@@ -23,3 +25,4 @@ const fileExplorer = new App<FileExplorerProps>("File Explorer", "file-explorer"
 
 export { fileExplorer, FileExplorerProps };
 export { FileSelectorMode } from "./types/utils";
+export { fileExplorerTranslations, type FileExplorerTranslationTree } from "./locales"; // [Edenna]

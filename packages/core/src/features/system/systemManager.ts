@@ -7,6 +7,8 @@ import { ModalsConfig } from "./configs/modalsConfig";
 import { TaskbarConfig } from "./configs/taskbarConfig";
 import { TrackingConfig } from "./configs/trackingConfig";
 import { WindowsConfig } from "./configs/windowsConfig";
+import { LocaleConfig } from "./configs/localeConfig";
+import { I18n } from "../i18n/i18n";
 import { formatRelativeTime } from "@prozilla-os/shared";
 import { Storage } from "../storage/storage";
 
@@ -24,6 +26,7 @@ export interface SystemManagerParams {
 	trackingConfig: TrackingConfig;
 	windowsConfig: WindowsConfig;
 	virtualDriveConfig: VirtualDriveConfig;
+	localeConfig?: LocaleConfig;
 }; 
 
 export class SystemManager {
@@ -46,6 +49,9 @@ export class SystemManager {
 
 	readonly storage: Storage;
 
+	/** [Edenna] Current language and translations. */
+	readonly i18n: I18n;
+
 	constructor({
 		systemName,
 		tagLine,
@@ -58,6 +64,7 @@ export class SystemManager {
 		trackingConfig,
 		windowsConfig,
 		virtualDriveConfig,
+		localeConfig = new LocaleConfig(),
 	}: SystemManagerParams) {
 		this.systemName = systemName ?? "ProzillaOS";
 		this.tagLine = tagLine ?? "Web-based Operating System";
@@ -77,6 +84,11 @@ export class SystemManager {
 
 		this.loadSkin();
 
+		this.i18n = new I18n(localeConfig);
+		this.applyLocale();
+		// Update app names before any component re-renders.
+		this.i18n.subscribe(() => { this.applyLocale(); });
+
 		this.#startDate = new Date();
 	}
 
@@ -89,6 +101,12 @@ export class SystemManager {
 
 		if (skin.loadStyleSheet != null)
 			skin.loadStyleSheet();
+	}
+
+	private applyLocale() {
+		this.appsConfig.apps.forEach((app) => {
+			app.applyLocale(this.i18n);
+		});
 	}
 
 	getUptime(precision = 2) {

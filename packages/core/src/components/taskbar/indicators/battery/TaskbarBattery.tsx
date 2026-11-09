@@ -2,7 +2,7 @@ import { faBatteryEmpty, faBatteryFull, faBatteryHalf, faBatteryQuarter, faBatte
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import styles from "./TaskbarBattery.module.css";
-import { OutsideClickListener, useClassNames } from "../../../../hooks";
+import { OutsideClickListener, useClassNames, useTranslation } from "../../../../hooks";
 import { TaskbarIndicatorMenu } from "../TaskbarIndicatorMenu";
 import { useTaskbarIndicatorState } from "../taskbarIndicatorState";
 
@@ -15,6 +15,7 @@ type BatteryManager = {
 
 export function TaskbarBattery() {
 	const [active, setActive] = useTaskbarIndicatorState();
+	const { t } = useTranslation(); // [Edenna]
 	const [isCharging, setIsCharging] = useState(true);
 	const [percentage, setPercentage] = useState(100);
 	// const [chargingTime, setChargingTime] = useState(0);
@@ -77,7 +78,7 @@ export function TaskbarBattery() {
 	}
 
 	return <OutsideClickListener onOutsideClick={() => { setActive(false); }}>
-		<button className={useClassNames([styles.Button], "Taskbar", "Indicator", "Battery")} title="Battery" tabIndex={0} onClick={() => { setActive(!active); }}>
+		<button className={useClassNames([styles.Button], "Taskbar", "Indicator", "Battery")} title={t("indicators.battery")} tabIndex={0} onClick={() => { setActive(!active); }}>
 			{!isCharging
 				? <FontAwesomeIcon className={styles["Charging-indicator"]} icon={faMinus}/>
 				: null
