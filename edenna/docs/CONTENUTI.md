@@ -55,13 +55,19 @@ Ogni app è un componente React più una definizione `App`. L'esempio completo �
 
 Per crearne una nuova:
 
-1. Copiare `edenna/src/apps/archivio/` in `edenna/src/apps/nome-app/` e modificarla.
+1. Copiare `edenna/src/apps/archivio/` in `edenna/src/apps/nome-app/` e modificarla. I testi vanno in `locales/` (vedi [I18N.md](I18N.md#testi-di-unapp-nuova)).
 2. Aggiungerla all'elenco in `edenna/src/config/apps.ts`.
 3. Se deve avere un'icona sul desktop, aggiungere un collegamento in `loadEdennaData()`, come per l'Archivio.
 
 Documentazione di riferimento delle API: la guida "Custom app" di ProzillaOS, presente anche nel repository in `docs/src/guides/custom-app.md`. Il codice delle app standard in `packages/apps/` è a sua volta un buon esempio.
 
 Le app nuove per Edenna vanno in `edenna/src/apps/`, non in `packages/apps/`: così restano separate dal codice di ProzillaOS.
+
+## Testi e lingue
+
+Tutti i testi dell'interfaccia stanno in dizionari separati, in italiano e inglese, e il tono aziendale della Edenna sta in `edenna/src/locales/overrides.ts`. Per cambiare un testo o aggiungerne di nuovi vedi **[I18N.md](I18N.md)**.
+
+I nomi delle cartelle in barra laterale e nel menu Home si configurano con `quickAccess` in `edenna/src/config/virtualDrive.ts`.
 
 ## Grafica e tema
 

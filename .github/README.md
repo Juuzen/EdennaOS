@@ -33,6 +33,7 @@ pnpm run edenna:dist           # pacchetti .deb e AppImage in edenna/release/
 - **[edenna/docs/FORK.md](../edenna/docs/FORK.md)** — come funziona il fork, file ProzillaOS modificati, aggiornamenti da upstream
 - **[edenna/docs/KIOSK.md](../edenna/docs/KIOSK.md)** — installare la postazione kiosk su Ubuntu
 - **[edenna/docs/CONTENUTI.md](../edenna/docs/CONTENUTI.md)** — documenti `.edoc`, filesystem virtuale, app custom, grafica
+- **[edenna/docs/I18N.md](../edenna/docs/I18N.md)** — lingue (italiano/inglese), dove stanno i testi, voce Edenna
 
 ## Scorciatoie staff
 

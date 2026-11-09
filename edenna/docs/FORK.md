@@ -31,6 +31,32 @@ Il controllo dei tipi (`edenna/tsconfig.json`) usa la stessa mappatura.
 | `package.json` (radice) | Aggiunti gli script `edenna:*` | Comandi rapidi dalla radice |
 | `pnpm-lock.yaml` | Rigenerato | Dipendenze di Edenna (Electron, electron-builder…) |
 | `packages/core/src/components/taskbar/indicators/battery/TaskbarBattery.tsx` | `getBattery()` → `getBattery.call(navigator)` | Bug di ProzillaOS: in Chromium la chiamata senza `this` genera "Illegal invocation" |
+| `eslint.config.js` | Regola `react/jsx-no-literals` sui pacchetti tradotti; `edenna/release` ignorata | Impedire nuovi testi non tradotti |
+
+### Sistema di traduzioni
+
+Il sistema di traduzioni (vedi [I18N.md](I18N.md)) è la modifica più estesa. Tutte le righe toccate sono segnate con `[Edenna]`.
+
+**File nuovi in `packages/`:**
+
+- `core/src/features/i18n/`: il motore delle traduzioni;
+- `core/src/features/system/configs/localeConfig.ts`: l'opzione `config.locale`;
+- `core/src/hooks/i18n/`: `useTranslation`, `useLocale`, `useQuickAccessLabel`;
+- `core/src/locales/`, `apps/file-explorer/src/locales/`, `apps/text-editor/src/locales/`: i dizionari;
+- `core/src/components/taskbar/indicators/language/`: il pulsante della lingua;
+- `core/test/features/i18n/`: i test.
+
+**File modificati in `packages/`:**
+
+- Tutti i componenti di `core` con testi visibili: desktop, finestre, barra e indicatori, menu Home e ricerca, dialoghi, condivisione, modalità autonoma, pagina 404.
+- `core/src/features/apps/app.tsx`: `setTranslations()` e `applyLocale()`, per avere nomi delle app tradotti.
+- `core/src/features/system/systemManager.ts`, `components/prozilla-os/ProzillaOS.tsx`, `hooks/system/systemManagerProvider.tsx`, `features/system/configs/appsConfig.ts`: collegamento di `config.locale`.
+- `core/src/features/system/configs/virtualDriveConfig.ts`: nuova opzione `quickAccess`, cioè le cartelle della barra laterale e del menu Home, prima fisse a "Images" e "Documents".
+- `core/src/components/_utils/directory-list/DirectoryList.tsx`: i collegamenti ad app e luoghi mostrano il nome tradotto.
+- `core/src/hooks/apps/installedApps.ts`: l'elenco delle app si aggiorna quando cambia la lingua.
+- `core/src/features/_utils/browser.utils.ts`: testo della conferma di spegnimento passato dall'esterno.
+- `core/src/features/virtual-drive/file/virtualFile.ts`: `getType()` accetta una funzione di traduzione.
+- `apps/file-explorer/src/` e `apps/text-editor/src/`: componenti tradotti e `main.ts`, che registra le traduzioni.
 
 File **aggiunti** fuori da `edenna/`: `.github/README.md` (la pagina del repository su GitHub, che ha la precedenza sul `README.md` di ProzillaOS, lasciato intatto) e `.github/workflows/edenna-build.yml`.
 
@@ -79,11 +105,9 @@ Due punti da verificare in particolare:
 
 Ora che il sorgente è nel repository, i limiti emersi con l'approccio a libreria si possono risolvere qui:
 
-| Limite | Dove intervenire |
+| Limite | Stato |
 |---|---|
-| Cartella utente `/home/prozilla-os` e nome host nel terminale | `packages/core/src/features/virtual-drive/root/defaultData.ts`, `packages/core/src/constants/shell.const.ts` |
-| Conferma di spegnimento in inglese | `packages/core/src/features/_utils/browser.utils.ts` |
-| Testi di Esplora risorse ("items", barra laterale con "Images" e "Documents") | `packages/apps/file-explorer/src/components/FileExplorer.tsx` |
-| Altri testi dell'interfaccia (menu contestuali, finestre di dialogo) | `packages/core/src/components/` |
-
-Una soluzione pulita per i testi è aggiungere a `core` un sistema di traduzioni configurabile, invece di sostituire le stringhe una per una. In questo modo anche il diff con ProzillaOS resta piccolo.
+| Testi dell'interfaccia in inglese | **Risolto**: sistema di traduzioni, vedi [I18N.md](I18N.md) |
+| Barra laterale di Esplora risorse con "Images" e "Documents" fissi | **Risolto**: opzione `config.virtualDrive.quickAccess` |
+| Cartella utente `/home/prozilla-os` e nome host nel terminale | Da fare: `packages/core/src/features/virtual-drive/root/defaultData.ts`, `packages/core/src/constants/shell.const.ts` |
+| Conferma di spegnimento con la finestra nativa del sistema | Da fare: `packages/core/src/components/taskbar/home/TaskbarHomeMenu.tsx` (sostituire `window.confirm` con un dialogo di Edenna OS) |

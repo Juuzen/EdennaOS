@@ -16,11 +16,8 @@ export const skin = new Skin({
 	defaultWallpaper: "/assets/edenna/wallpaper.svg",
 	wallpapers: ["/assets/edenna/wallpaper.svg"],
 	defaultTheme: Theme.Light,
-	// Nomi e icone delle app standard, sovrascritti per id.
-	appNames: {
-		"file-explorer": "Esplora risorse",
-		"text-editor": "Editor di testo",
-	},
+	// Icone delle app standard, sovrascritte per id.
+	// I nomi delle app vengono dalle traduzioni (src/locales/overrides.ts), non dalla skin.
 	appIcons: {
 		"file-explorer": "/assets/edenna/icons/file-explorer.svg",
 		"text-editor": "/assets/edenna/icons/text-editor.svg",

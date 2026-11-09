@@ -12,6 +12,7 @@ export default defineConfig(
 	globalIgnores([
 		"eslint.config.js",
 		"**/dist/**/*",
+		"edenna/release/**/*", // [Edenna] Linux packages
 		"**/node_modules/**/*",
 		"**/vite.config.ts.timestamp-*.mjs",
 		"docs/.vitepress/cache/**/*"
@@ -200,6 +201,24 @@ export default defineConfig(
 				checkDestructured: false,
 			}],
 		}
+	},
+	{
+		// [Edenna] Interface texts must come from the translations (see edenna/docs/I18N.md).
+		// Enabled for the translated packages only.
+		files: [
+			"packages/core/src/components/**/*.tsx",
+			"packages/core/src/router/**/*.tsx",
+			"packages/apps/file-explorer/src/**/*.tsx",
+			"packages/apps/text-editor/src/**/*.tsx",
+			"edenna/src/**/*.tsx",
+		],
+		rules: {
+			"react/jsx-no-literals": ["error", {
+				noStrings: false,
+				allowedStrings: ["%", "*", "-", "·", ":", "/", "|", "(", ")"],
+				ignoreProps: true,
+			}],
+		},
 	},
 	{
 		// TODO: Gradually enable for all packages
