@@ -47,7 +47,7 @@ In `edenna/src/App.tsx`:
 | Modalità | Effetti | Uso |
 |---|---|---|
 | `spento` | nessuno | |
-| `terminale` (avvio) | scanline sottili, vignettatura, curvatura del vetro. **Tutto fisso** | Sempre attivo: dà la sensazione di "monitor aziendale" senza disturbare la lettura |
+| `terminale` (avvio) | scanline sottili e rade, bordi appena più scuri, curvatura del vetro. **Tutto fisso e appena percettibile** | Sempre attivo: dà la sensazione di "monitor aziendale" senza disturbare la lettura |
 | `anomalia` | in più: glitch con separazione dei colori, rumore, sfarfallio, banda di refresh veloce | Brevi scoppi per eventi narrativi |
 
 ![Modalità anomalia](img/crt-anomalia.png)
@@ -56,7 +56,7 @@ In `edenna/src/App.tsx`:
 
 | Comando | Effetto |
 |---|---|
-| **Ctrl+Alt+Shift+E** (staff) | Modalità successiva: spento → terminale → anomalia |
+| **Ctrl+Alt+Shift+E** (staff) | Modalità successiva: spento → terminale → anomalia. All'avvio e a ogni reset si riparte da `terminale` |
 | **Ctrl+Alt+Shift+G** (staff) | Anomalia per 3 secondi |
 | `effetto: anomalia` nell'intestazione di un `.edoc` | Anomalia di 2,5 secondi quando il documento viene aperto (attiva nel prototipo su "Nota interna 0147") |
 | `useCrt().glitch(ms)` / `useCrt().setMode(…)` | Da qualsiasi app Edenna |
@@ -116,9 +116,21 @@ Qualsiasi effetto **animato** (banda di refresh, sfarfallio, glitch, rumore) cos
 | **Web Component `<crt-effect>`** | Indipendente da React | Nessun vantaggio qui: Edenna è già React |
 | **Shader WebGL scritto da noi** | Distorsione vera dello schermo (curvatura reale), prestazioni migliori con la GPU | Molto più lavoro; non esiste un modo semplice di passare il DOM a uno shader |
 
+## Regolazione
+
+Scelta attuale: effetto **sempre attivo ma discreto**. Valori della modalità `terminale` in `edenna/src/crt/modes.ts`:
+
+| Parametro | Valore | Effetto se lo si aumenta |
+|---|---|---|
+| `scanlineOpacity` | 0.035 | Righe più scure |
+| `scanlineGap` | 3 | Righe più rade |
+| `vignetteIntensity` | 0.12 | Bordi dello schermo più scuri |
+| `curvatureIntensity` | 0.15 | Angoli più scuri e arrotondati (effetto vetro) |
+
+La modalità `anomalia` usa valori propri, più forti, e non dipende da questi.
+
 ## Prossimi passi proposti
 
 1. **Prova sul PC del kiosk** (vedi "Prestazioni") e regolazione a occhio delle intensità in `modes.ts`: monitor e distanza cambiano molto la resa.
-2. **Decidere la modalità di avvio**: `terminale` o `spento`, con l'effetto attivato solo in certi momenti della storia.
-3. **Collegare le anomalie alla narrazione**: documenti specifici (già possibile con `effetto: anomalia`), azioni dei giocatori, o comandi dello staff da un'altra postazione (serve un canale di rete).
-4. **App "terminale legacy"** con un preset scuro (`fallout`/`dos`) solo nella sua finestra, se serve un contrasto tra la Edenna "moderna" e sistemi più vecchi.
+2. **Collegare le anomalie alla narrazione**: documenti specifici (già possibile con `effetto: anomalia`), azioni dei giocatori, o comandi dello staff da un'altra postazione (serve un canale di rete).
+3. **App "terminale legacy"** con un preset scuro (`fallout`/`dos`) solo nella sua finestra, se serve un contrasto tra la Edenna "moderna" e sistemi più vecchi.
