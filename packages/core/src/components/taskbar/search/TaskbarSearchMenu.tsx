@@ -1,7 +1,7 @@
 import styles from "./TaskbarSearchMenu.module.css";
 import appStyles from "../TaskbarMenus.module.css";
 import { ChangeEventHandler, useCallback, useEffect, useMemo, useState } from "react";
-import { useClassNames, useInstalledApps, useKeyboardListener, UseKeyboardListenerParams, useWindowsManager } from "../../../hooks";
+import { useClassNames, useInstalledApps, useKeyboardListener, UseKeyboardListenerParams, useTranslation, useWindowsManager } from "../../../hooks";
 import { VectorImage } from "../../_utils/vector-image/VectorImage";
 import { useTaskbarContext } from "../taskbarSlots";
 
@@ -10,6 +10,7 @@ export function TaskbarSearchMenu() {
 	const active = activeMenu === "search";
 	const windowsManager = useWindowsManager();
 	const installedApps = useInstalledApps();
+	const { t } = useTranslation(); // [Edenna]
 	const [tabIndex, setTabIndex] = useState(active ? 0 : -1);
 
 	useEffect(() => {
@@ -87,12 +88,12 @@ export function TaskbarSearchMenu() {
 			<input
 				ref={searchInputRef}
 				className={useClassNames([styles.Input], "SearchMenu", "Input")}
-				aria-label="Search query"
+				aria-label={t("search.query")}
 				tabIndex={tabIndex}
 				value={searchQuery}
 				onChange={onChange}
 				spellCheck={false}
-				placeholder="Search..."
+				placeholder={t("search.placeholder")}
 			/>
 		</div>
 	</div>;

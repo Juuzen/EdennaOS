@@ -1,3 +1,5 @@
+import type { TranslationKey, Translator } from "../../i18n/types";
+import type { CoreTranslationTree } from "../../../locales/en";
 import { AUDIO_EXTENSIONS, FILE_SCHEMES, IMAGE_EXTENSIONS, VIDEO_EXTENSIONS } from "../../../constants/virtualDrive.const";
 import { downloadUrl } from "../../_utils";
 import { WindowsManager } from "../../windows/windowsManager";
@@ -175,27 +177,30 @@ export class VirtualFile extends VirtualBase<VirtualFileEvents> {
 		return iconUrl;
 	}
 
-	getType(): string {
-		let type = "";
+	/**
+	 * Returns a description of the type of this file, e.g. "Text file (.txt)".
+	 * @param t - [Edenna] Translator of the core translations, to describe the type in the current language.
+	 */
+	getType(t?: Translator<CoreTranslationTree>): string {
+		if (this.extension == null) return t?.("fileTypes.unknown") ?? "Unknown file";
 
-		if (this.extension == null) return "Unknown file";
+		const extension = this.extension.toLowerCase();
+		const knownTypes: Record<string, TranslationKey<CoreTranslationTree>> = {
+			png: "fileTypes.png",
+			txt: "fileTypes.txt",
+			md: "fileTypes.md",
+			xml: "fileTypes.xml",
+		};
 
-		switch (this.extension) {
-			case "png":
-				type = "PNG Image";
-				break;
-			case "txt":
-				type = "Text";
-				break;
-			case "md":
-				type = "Markdown source";
-				break;
-			case "xml":
-				type = "XML source";
-				break;
+		if (t == null) {
+			const englishTypes: Record<string, string> = { png: "PNG Image", txt: "Text", md: "Markdown source", xml: "XML source" };
+			return `${englishTypes[extension] ?? ""} file (.${extension})`.trim();
 		}
 
-		return `${type} file (.${this.extension.toLowerCase()})`.trim();
+		const typeKey = knownTypes[extension] as TranslationKey<CoreTranslationTree> | undefined;
+		return typeKey != null
+			? t("fileTypes.known", { type: t(typeKey), extension })
+			: t("fileTypes.other", { extension });
 	}
 
 	download() {

@@ -1,7 +1,7 @@
 import { memo, MouseEvent, ReactNode, useCallback, useMemo, useRef, useState, type FC } from "react";
 import styles from "./Taskbar.module.css";
 import { attachSlots, InferSlots, type PropsWithSlots } from "../_utils/slots/slots";
-import { useClassNames, useSystemManager } from "../../hooks";
+import { useClassNames, useSystemManager, useTranslation } from "../../hooks";
 import { useContextMenu } from "../../hooks/modals/contextMenu";
 import { Actions } from "../actions/Actions";
 import { ClickAction } from "../actions/actions/ClickAction";
@@ -36,10 +36,11 @@ function TaskbarRoot({ children, ...slots }: TaskbarProps): ReactNode {
 	const windowsManager = useWindowsManager();
 	const zIndex = useZIndex({ groupIndex: ZIndexManager.GROUPS.TASKBAR, index: 0 });
 	const settingsApp = appsConfig.getAppByRole(AppsConfig.APP_ROLES.settings);
+	const { t } = useTranslation(); // [Edenna]
 	const { onContextMenu } = useContextMenu({ Actions: (props) =>
 		<Actions avoidTaskbar={false} {...props}>
 			{settingsApp != null &&
-				<ClickAction label={`Open ${settingsApp.name}`} icon={settingsApp.iconUrl as string | undefined} onTrigger={() => {
+				<ClickAction label={t("actions.openApp", { app: settingsApp.name })} icon={settingsApp.iconUrl as string | undefined} onTrigger={() => {
 					windowsManager?.open(settingsApp.id);
 				}}/>
 			}

@@ -7,14 +7,16 @@ import { TaskbarNetwork } from "./network/TaskbarNetwork";
 import { TaskbarVolume } from "./volume/TaskbarVolume";
 import { TaskbarCalendar } from "./calendar/TaskbarCalendar";
 import { TaskbarDesktopButton } from "./desktop-button/TaskbarDesktopButton";
+import { TaskbarLanguage } from "./language/TaskbarLanguage";
 import { SlotsView } from "../../_utils/slots";
 
-export type TaskbarIndicatorsProps = PropsWithSlots<{ Battery: FC; Network: FC; Volume: FC; Calendar: FC; DesktopButton: FC }>;
+export type TaskbarIndicatorsProps = PropsWithSlots<{ Battery: FC; Network: FC; Volume: FC; Language: FC; Calendar: FC; DesktopButton: FC }>;
 
 const DEFAULT_SLOTS = {
 	Battery: TaskbarBattery,
 	Network: TaskbarNetwork,
 	Volume: TaskbarVolume,
+	Language: TaskbarLanguage, // [Edenna]
 	Calendar: TaskbarCalendar,
 	DesktopButton: TaskbarDesktopButton,
 };
@@ -37,6 +39,8 @@ export const TaskbarIndicators = attachSlots<typeof IndicatorsRoot>(memo(Indicat
 	Network: TaskbarNetwork,
 	/** Component that renders the volume indicator in the taskbar. */
 	Volume: TaskbarVolume,
+	/** [Edenna] Component that renders the language indicator in the taskbar (hidden with a single language). */
+	Language: TaskbarLanguage,
 	/** Component that renders the calendar indicator in the taskbar. */
 	Calendar: TaskbarCalendar,
 	/** Component that renders the desktop button in the taskbar. */

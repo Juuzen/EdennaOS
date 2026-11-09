@@ -64,6 +64,7 @@ export class AppsConfig extends EventEmitter<AppsConfigEvents> {
 			throw new Error(`Duplicate app ID found: ${app.id}\nApp IDs must be unique.`);
 
 		app.applySkin(systemManager.skin);
+		app.applyLocale(systemManager.i18n); // [Edenna]
 		this.apps.push(app);
 		this.emit(AppsConfig.APPS_CHANGE_EVENT);
 	}

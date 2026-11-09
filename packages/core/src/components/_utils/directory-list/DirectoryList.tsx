@@ -1,4 +1,4 @@
-import { MouseEventHandler, ReactElement, useEffect, useRef, useState } from "react";
+import { MouseEventHandler, ReactElement, useContext, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import styles from "./DirectoryList.module.css";
 import { ImagePreview } from "./ImagePreview";
 import { VirtualFile } from "../../../features/virtual-drive/file";
@@ -7,6 +7,12 @@ import { Interactable } from "../interactable/Interactable";
 import { useClassNames } from "../../../hooks/_utils/classNames";
 import { removeFromArray, Vector2 } from "@prozilla-os/shared";
 import { VirtualBase } from "../../../features/virtual-drive/virtualBase";
+import { SystemManagerContext } from "../../../hooks/system/systemManagerContext";
+import { FILE_SCHEMES } from "../../../constants/virtualDrive.const";
+import { VirtualFolderLink } from "../../../features/virtual-drive/folder";
+import { getQuickAccessLabel } from "../../../features/system/configs/virtualDriveConfig";
+
+const NO_SUBSCRIPTION = () => () => {};
 
 export interface OnSelectionChangeParams {
 	/** The selected files. */
@@ -51,6 +57,26 @@ export interface DirectoryListProps {
  */
 export function DirectoryList({ directory, showHidden = false, folderClassName, fileClassName, className,
 	onContextMenuFile, onContextMenuFolder, onOpenFile, onOpenFolder, allowMultiSelect = true, onSelectionChange, ...props }: DirectoryListProps): ReactElement | null {
+	// [Edenna] Shortcuts to apps show the app name in the current language.
+	const systemManager = useContext(SystemManagerContext);
+	useSyncExternalStore(systemManager?.i18n.subscribe ?? NO_SUBSCRIPTION, () => systemManager?.i18n.locale);
+	const getFileLabel = (file: VirtualFile): string => {
+		if (systemManager != null && file.source?.startsWith(FILE_SCHEMES.app)) {
+			const app = systemManager.appsConfig.getAppById(file.source.slice(FILE_SCHEMES.app.length));
+			if (app != null)
+				return app.name;
+		}
+		return file.id;
+	};
+	// [Edenna] Links to quick access places show the name of the place in the current language.
+	const getFolderLabel = (folder: VirtualFolder): string => {
+		const linkedPath = (folder as VirtualFolderLink).linkedPath;
+		if (systemManager == null || linkedPath == null)
+			return folder.name;
+		const root = folder.getRoot();
+		const place = systemManager.virtualDriveConfig.quickAccess.find((place) => root.navigate(place.path)?.path === linkedPath);
+		return place != null ? getQuickAccessLabel(place, systemManager.i18n) : folder.name;
+	};
 	const [folders, setFolders] = useState<VirtualFolder[]>([]);
 	const [files, setFiles] = useState<VirtualFile[]>([]);
 	const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
@@ -230,7 +256,7 @@ export function DirectoryList({ directory, showHidden = false, folderClassName, 
 				<div className={styles.FolderIcon}>
 					<ImagePreview source={folder.getIconUrl()} onError={() => { folder.setIconUrl(null); }}/>
 				</div>
-				<p>{folder.name}</p>
+				<p>{getFolderLabel(folder)}</p>
 			</Interactable>
 		)}
 		{files.map((file) => 
@@ -253,7 +279,7 @@ export function DirectoryList({ directory, showHidden = false, folderClassName, 
 				<div className={styles.FileIcon}>
 					<ImagePreview source={file.getIconUrl()} onError={() => { file.setIconUrl(null); }}/>
 				</div>
-				<p>{file.id}</p>
+				<p>{getFileLabel(file)}</p>
 			</Interactable>
 		)}
 	</div>;

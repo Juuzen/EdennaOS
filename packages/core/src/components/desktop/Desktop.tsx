@@ -13,7 +13,7 @@ import { ModalProps } from "../modals/ModalView";
 import { reloadViewport, ModalsManager, AppsConfig, Settings } from "../../features";
 import { VirtualFile } from "../../features/virtual-drive/file";
 import { VirtualFolder, VirtualFolderLink } from "../../features/virtual-drive/folder";
-import { useSettingsManager, useWindowsManager, useVirtualRoot, useWindowedModal, useContextMenu, useSystemManager } from "../../hooks";
+import { useSettingsManager, useWindowsManager, useVirtualRoot, useWindowedModal, useContextMenu, useSystemManager, useTranslation } from "../../hooks";
 import { DirectoryList } from "../_utils";
 import { FileEventHandler, FolderEventHandler } from "../_utils/directory-list/DirectoryList";
 import { useClassNames } from "../../hooks";
@@ -27,6 +27,7 @@ export const Desktop = memo(() => {
 	const settingsManager = useSettingsManager();
 	const windowsManager = useWindowsManager();
 	const virtualRoot = useVirtualRoot();
+	const { t } = useTranslation(); // [Edenna]
 
 	const [wallpaper, setWallpaper] = useState<string | null>(null);
 	const [showIcons, setShowIcons] = useState(false);
@@ -42,34 +43,34 @@ export const Desktop = memo(() => {
 
 	const { onContextMenu, ShortcutsListener } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
-			<DropdownAction label="View" icon={faEye}>
+			<DropdownAction label={t("desktop.view")} icon={faEye}>
 				<RadioAction initialIndex={iconSize} onTrigger={(_event, _params, value) => {
 					const settings = settingsManager?.getSettings(Settings.DESKTOP);
 					void settings?.set("icon-size", value as string);
 				}} options={[
-					{ label: "Small icons" },
-					{ label: "Medium icons" },
-					{ label: "Large icons" },
+					{ label: t("desktop.smallIcons") },
+					{ label: t("desktop.mediumIcons") },
+					{ label: t("desktop.largeIcons") },
 				]}/>
 				<Divider/>
 				<RadioAction initialIndex={iconDirection} onTrigger={(_event, _params, value) => {
 					const settings = settingsManager?.getSettings(Settings.DESKTOP);
 					void settings?.set("icon-direction", value as string);
 				}} options={[
-					{ label: "Align vertically" },
-					{ label: "Align horizontally" },
+					{ label: t("desktop.alignVertically") },
+					{ label: t("desktop.alignHorizontally") },
 				]}/>
 				<Divider/>
-				<ToggleAction label="Show desktop icons" initialValue={showIcons} onTrigger={() => {
+				<ToggleAction label={t("desktop.showIcons")} initialValue={showIcons} onTrigger={() => {
 					const settings = settingsManager?.getSettings(Settings.DESKTOP);
 					void settings?.set("show-icons", (!showIcons).toString());
 				}}/>
 			</DropdownAction>
-			<ClickAction label="Reload" shortcut={["Control", "r"]} icon={faArrowsRotate} onTrigger={() => {
+			<ClickAction label={t("desktop.reload")} shortcut={["Control", "r"]} icon={faArrowsRotate} onTrigger={() => {
 				reloadViewport();
 			}}/>
 			<ClickAction
-				label={!document.fullscreenElement ? "Enter fullscreen" : "Exit fullscreen"}
+				label={!document.fullscreenElement ? t("desktop.enterFullscreen") : t("desktop.exitFullscreen")}
 				shortcut={["F11"]}
 				icon={!document.fullscreenElement ? faExpand : faCompress}
 				onTrigger={() => {
@@ -88,23 +89,23 @@ export const Desktop = memo(() => {
 				}}
 			/>
 			{settingsApp != null &&
-				<ClickAction label="Change appearance" icon={faPaintBrush} onTrigger={() => {
+				<ClickAction label={t("desktop.changeAppearance")} icon={faPaintBrush} onTrigger={() => {
 					windowsManager?.open(settingsApp.id, { tab: 1 });
 				}}/>
 			}
 			<Divider/>
 			{fileExplorerApp != null &&
-				<ClickAction label={`Open in ${fileExplorerApp.name}`} icon={fileExplorerApp.iconUrl as string | undefined} onTrigger={() => {
+				<ClickAction label={t("actions.openIn", { app: fileExplorerApp.name })} icon={fileExplorerApp.iconUrl as string | undefined} onTrigger={() => {
 					windowsManager?.open(fileExplorerApp.id, { path: directory?.path });
 				}}/>
 			}
 			{terminalApp != null &&
-				<ClickAction label={`Open in ${terminalApp.name}`} icon={terminalApp.iconUrl as string | undefined} onTrigger={() => {
+				<ClickAction label={t("actions.openIn", { app: terminalApp.name })} icon={terminalApp.iconUrl as string | undefined} onTrigger={() => {
 					windowsManager?.open(terminalApp.id, { path: directory?.path });
 				}}/>
 			}
 			<Divider/>
-			<ClickAction label={"Share"} icon={ModalsManager.getModalIconUrl("share")} onTrigger={() => {
+			<ClickAction label={t("actions.share")} icon={ModalsManager.getModalIconUrl("share")} onTrigger={() => {
 				openWindowedModal({
 					size: new Vector2(350, 350),
 					Modal: (props: ModalProps) => <Share {...props}/>,
@@ -114,36 +115,36 @@ export const Desktop = memo(() => {
 	});
 	const { onContextMenu: onContextMenuFile } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
-			<ClickAction label="Open" onTrigger={(_event, file) => {
+			<ClickAction label={t("actions.open")} onTrigger={(_event, file) => {
 				if (windowsManager != null) (file as VirtualFile).open(windowsManager);
 			}}/>
 			{fileExplorerApp != null &&
-				<ClickAction label={`Reveal in ${fileExplorerApp.name}`} icon={fileExplorerApp.iconUrl as string | undefined} onTrigger={(_event, file) => {
+				<ClickAction label={t("actions.revealIn", { app: fileExplorerApp.name })} icon={fileExplorerApp.iconUrl as string | undefined} onTrigger={(_event, file) => {
 					if (windowsManager != null)	(file as VirtualFile).parent?.open(windowsManager);
 				}}/>
 			}
-			<ClickAction label="Delete" icon={faTrash} onTrigger={(_event, file) => {
+			<ClickAction label={t("actions.delete")} icon={faTrash} onTrigger={(_event, file) => {
 				(file as VirtualFile).delete();
 			}}/>
 		</Actions>,
 	});
 	const { onContextMenu: onContextMenuFolder } = useContextMenu({ Actions: (props) =>
 		<Actions {...props}>
-			<ClickAction label="Open" onTrigger={(_event, folder) => {
+			<ClickAction label={t("actions.open")} onTrigger={(_event, folder) => {
 				if (windowsManager != null)	(folder as VirtualFolder).open(windowsManager);
 			}}/>
 			{fileExplorerApp != null &&
-				<ClickAction label={`Open in ${fileExplorerApp.name}`} icon={fileExplorerApp.iconUrl as string | undefined} onTrigger={(_event, folder) => {
+				<ClickAction label={t("actions.openIn", { app: fileExplorerApp.name })} icon={fileExplorerApp.iconUrl as string | undefined} onTrigger={(_event, folder) => {
 					windowsManager?.open(fileExplorerApp.id, { path: (folder as VirtualFolder).path });
 				}}/>
 			}
 			{terminalApp != null &&
-				<ClickAction label={`Open in ${terminalApp.name}`} icon={terminalApp.iconUrl as string | undefined} onTrigger={(_event, folder) => {
+				<ClickAction label={t("actions.openIn", { app: terminalApp.name })} icon={terminalApp.iconUrl as string | undefined} onTrigger={(_event, folder) => {
 					if (windowsManager != null)	(folder as VirtualFolder).parent?.open(windowsManager);
 				}}/>
 			}
 			<Divider/>
-			<ClickAction label="Delete" icon={faTrash} onTrigger={(_event, folder) => {
+			<ClickAction label={t("actions.delete")} icon={faTrash} onTrigger={(_event, folder) => {
 				(folder as VirtualFolder).delete();
 			}}/>
 		</Actions>,
@@ -213,7 +214,7 @@ export const Desktop = memo(() => {
 				? <img
 					src={wallpaper}
 					className={wallpaperClassName}
-					alt="Desktop wallpaper"
+					alt={t("desktop.wallpaper")}
 					onError={onError}
 				/>
 				: null

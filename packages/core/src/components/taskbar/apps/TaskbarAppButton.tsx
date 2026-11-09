@@ -1,6 +1,6 @@
 import { memo, MouseEvent } from "react";
 import { App } from "../../../features";
-import { useClassNames, useContextMenu, useWindowsManager } from "../../../hooks";
+import { useClassNames, useContextMenu, useLocale, useWindowsManager } from "../../../hooks";
 import { Actions, ClickAction } from "../../actions";
 import styles from "./TaskbarAppButton.module.css";
 import { VectorImage } from "../../_utils/vector-image/VectorImage";
@@ -13,6 +13,7 @@ export interface TaskbarAppButtonProps {
 
 export const TaskbarAppButton = memo(({ app, active, visible }: TaskbarAppButtonProps) => {
 	const windowsManager = useWindowsManager();
+	useLocale(); // [Edenna] Re-render when the language (and thus the app name) changes.
 	// const settingsManager = useSettingsManager();
 	const { onContextMenu } = useContextMenu({ Actions: (props) =>
 		<Actions avoidTaskbar={false} {...props}>

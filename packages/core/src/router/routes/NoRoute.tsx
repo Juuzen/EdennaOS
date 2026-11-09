@@ -2,6 +2,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import styles from "./NoRoute.module.css";
 import { Button } from "../../components/_utils/button/Button";
 import utilStyles from "../../styles/utils.module.css";
+import { useTranslation } from "../../hooks/i18n/translation";
 
 export interface NoRouteProps {
 	/**
@@ -12,8 +13,9 @@ export interface NoRouteProps {
 } 
 
 export function NoRoute() {
+	const { t } = useTranslation(); // [Edenna]
 	return <span className={styles.NoRoute}>
-		<p className={`${styles.Title} ${utilStyles.TextSemibold}`}>404: Not Found</p>
-		<Button className={styles.Link} icon={faArrowRight} href="/" target="_self">Home</Button>
+		<p className={`${styles.Title} ${utilStyles.TextSemibold}`}>{t("notFound.title")}</p>
+		<Button className={styles.Link} icon={faArrowRight} href="/" target="_self">{t("notFound.home")}</Button>
 	</span>;
 }

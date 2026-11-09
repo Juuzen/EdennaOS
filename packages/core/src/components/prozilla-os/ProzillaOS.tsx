@@ -16,6 +16,7 @@ import { TrackingConfig, TrackingConfigOptions } from "../../features/system/con
 import { WindowsConfig, WindowsConfigOptions } from "../../features/system/configs/windowsConfig";
 import { TrackingManagerProvider } from "../../hooks/tracking/trackingManagerProvider";
 import { VirtualDriveConfig, VirtualDriveConfigOptions } from "../../features/system/configs/virtualDriveConfig";
+import { LocaleConfig, LocaleConfigOptions } from "../../features/system/configs/localeConfig";
 import { Main } from "./Main";
 import { Skin } from "@prozilla-os/skins";
 
@@ -34,6 +35,8 @@ export interface ProzillaOSProps {
 		tracking?: Partial<TrackingConfigOptions>;
 		windows?: Partial<WindowsConfigOptions>;
 		virtualDrive?: Partial<VirtualDriveConfigOptions>;
+		/** [Edenna] Language and translations. */
+		locale?: Partial<LocaleConfigOptions>;
 	},
 	skin?: Skin;
 	children?: ReactNode;
@@ -57,6 +60,7 @@ export const ProzillaOS = memo(function(props: ProzillaOSProps): ReactElement {
 		trackingConfig: new TrackingConfig(config?.tracking),
 		windowsConfig: new WindowsConfig(config?.windows),
 		virtualDriveConfig: new VirtualDriveConfig(config?.virtualDrive),
+		localeConfig: new LocaleConfig(config?.locale),
 	} as SystemManagerParams;
 
 	return <SystemManagerProvider {...systemParams}>

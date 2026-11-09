@@ -39,7 +39,7 @@ const ALPHABETICAL_SORT = (a: App, b: App): number => a.name.localeCompare(b.nam
 export function useInstalledApps(options: InstalledAppsOptions = {}) {
 	const { sort, filter } = options;
 
-	const { appsConfig } = useSystemManager();
+	const { appsConfig, i18n } = useSystemManager();
 	const [apps, setApps] = useState<App[]>([]);
 
 	const updateApps = useCallback(() => {
@@ -60,8 +60,13 @@ export function useInstalledApps(options: InstalledAppsOptions = {}) {
 
 	useEffect(() => {
 		updateApps();
-		return appsConfig.onAppsChange(updateApps);
-	}, [updateApps]);
+		const unsubscribeLocale = i18n.subscribe(updateApps); // [Edenna] App names change with the language.
+		const unsubscribeApps = appsConfig.onAppsChange(updateApps);
+		return () => {
+			unsubscribeLocale();
+			unsubscribeApps();
+		};
+	}, [updateApps, i18n]);
 
 	return apps;
 }

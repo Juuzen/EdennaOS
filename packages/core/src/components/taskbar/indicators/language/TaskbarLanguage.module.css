@@ -1,0 +1,16 @@
+/* [Edenna] Language indicator */
+.Button {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.35rem;
+	white-space: nowrap;
+	user-select: none;
+}
+
+.Button > p {
+	margin: 0;
+	font-size: 0.8rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+}

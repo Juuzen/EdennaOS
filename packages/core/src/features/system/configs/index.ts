@@ -6,3 +6,4 @@ export * from "./taskbarConfig";
 export * from "./trackingConfig";
 export * from "./windowsConfig";
 export * from "./virtualDriveConfig";
+export * from "./localeConfig";
