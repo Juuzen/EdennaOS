@@ -48,10 +48,13 @@ const TERMINALE: CRTOptions = {
 	scanlineOpacity: 0.035,
 	scanlineThickness: 1,
 	scanlineGap: 3,
-	// Nessuna animazione: ogni effetto animato obbliga a ridisegnare tutto lo schermo
-	// a ogni fotogramma (vedi edenna/docs/CRT.md, "Prestazioni"). Per provare la banda
-	// di refresh: enableSweep: true, sweepStyle: "soft", sweepDuration: 14, sweepThickness: 80.
-	enableSweep: false,
+	// Banda di refresh lenta e morbida. È l'unico effetto animato della modalità:
+	// crt.css la sposta a scatti (circa 20 al secondo) per contenere il costo
+	// (vedi edenna/docs/CRT.md, "Prestazioni").
+	enableSweep: true,
+	sweepStyle: "soft",
+	sweepDuration: 16,
+	sweepThickness: 90,
 	// Bordi appena più scuri e vetro curvo.
 	enableVignette: true,
 	vignetteIntensity: 0.12,

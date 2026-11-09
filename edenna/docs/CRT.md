@@ -8,7 +8,7 @@ Studio sull'integrazione di [vault66-crt-effect](https://github.com/mdombrov-33/
 
 - **Integrazione tecnica semplice.** La libreria è piccola, ha licenza MIT, nessuna dipendenza e funziona con React 18 ed Electron offline. Si avvolge tutto `<ProzillaOS>` in un componente, senza toccare i pacchetti di ProzillaOS.
 - **È pensata per schermi scuri.** Edenna OS è chiaro, e due effetti (scanline e rumore) sullo sfondo bianco non si vedono. Il prototipo lo corregge con poche righe di CSS.
-- **Il vero costo sono le prestazioni.** Gli effetti fissi non costano quasi nulla, quelli animati obbligano a ridisegnare tutto lo schermo a ogni fotogramma. Il prototipo usa quindi un effetto di base fisso e riserva le animazioni a brevi "anomalie".
+- **Il vero costo sono le prestazioni.** Gli effetti fissi non costano quasi nulla, quelli animati obbligano a ridisegnare tutto lo schermo a ogni fotogramma. L'effetto di base ha una sola animazione, una banda di refresh lenta resa più economica; gli effetti animati pesanti sono riservati a brevi "anomalie".
 - **Uso narrativo.** Le anomalie si attivano con una scorciatoia staff, oppure da un documento quando lo si apre (`effetto: anomalia` nell'intestazione del `.edoc`).
 
 ## La libreria
@@ -47,7 +47,7 @@ In `edenna/src/App.tsx`:
 | Modalità | Effetti | Uso |
 |---|---|---|
 | `spento` | nessuno | |
-| `terminale` (avvio) | scanline sottili e rade, bordi appena più scuri, curvatura del vetro. **Tutto fisso e appena percettibile** | Sempre attivo: dà la sensazione di "monitor aziendale" senza disturbare la lettura |
+| `terminale` (avvio) | scanline sottili e rade, bordi appena più scuri, curvatura del vetro, **banda di refresh lenta e leggera** (un passaggio ogni 16 secondi). Appena percettibile | Sempre attivo: dà la sensazione di "monitor aziendale" senza disturbare la lettura |
 | `anomalia` | in più: glitch con separazione dei colori, rumore, sfarfallio, banda di refresh veloce | Brevi scoppi per eventi narrativi |
 
 ![Modalità anomalia](img/crt-anomalia.png)
@@ -58,7 +58,7 @@ In `edenna/src/App.tsx`:
 |---|---|
 | **Ctrl+Alt+Shift+E** (staff) | Modalità successiva: spento → terminale → anomalia. All'avvio e a ogni reset si riparte da `terminale` |
 | **Ctrl+Alt+Shift+G** (staff) | Anomalia per 3 secondi |
-| `effetto: anomalia` nell'intestazione di un `.edoc` | Anomalia di 2,5 secondi quando il documento viene aperto (attiva nel prototipo su "Nota interna 0147") |
+| `effetto: anomalia` nell'intestazione di un `.edoc` | Anomalia di 2,5 secondi quando il documento viene aperto. Nessun documento la usa, per ora |
 | `useCrt().glitch(ms)` / `useCrt().setMode(…)` | Da qualsiasi app Edenna |
 
 Ctrl+Alt+Shift+**C** sarebbe stato più intuitivo, ma Electron in modalità kiosk blocca Ctrl+Shift+C ("ispeziona elemento").
@@ -96,16 +96,21 @@ Le misure sono state fatte nell'ambiente di prova, **senza scheda grafica** (ren
 | Configurazione | CPU |
 |---|---|
 | Effetto spento | ~1% |
-| `terminale` fisso (scanline, vignettatura, curvatura) | ~2% |
-| `terminale` + banda di refresh animata | 40–80% |
+| Solo effetti fissi (scanline, vignettatura, curvatura) | ~2% |
+| Banda di refresh come la anima la libreria (proprietà `top`) | 40–80% |
+| Banda di refresh con `transform`, continua | ~54% |
+| **`terminale` attuale**: banda con `transform`, a scatti (~20 al secondo) | **~26%** |
 | `anomalia` | ~110% |
 
 Qualsiasi effetto **animato** (banda di refresh, sfarfallio, glitch, rumore) costringe il browser a ricomporre tutto lo schermo a ogni fotogramma, anche gli strati fissi sopra di lui. Con una GPU il costo scende molto, ma resta proporzionale alla risoluzione. Per questo:
 
-- la modalità di base è **fissa** e non costa nulla;
-- le animazioni sono confinate alle **anomalie brevi**.
+- nella modalità di base l'unica animazione è la banda di refresh. `crt.css` la anima con `transform`, che la GPU sposta senza ridisegnare, e **a scatti** (`steps()`, circa 20 aggiornamenti al secondo invece di 60). Con una banda morbida e sfocata gli scatti non si vedono, e il costo si dimezza;
+- le animazioni pesanti sono confinate alle **anomalie brevi**, dove la banda torna continua e veloce.
 
-**Da verificare sul PC del kiosk:** con Edenna OS aperto, `top` in un terminale (o via SSH), poi Ctrl+Alt+Shift+E per passare da una modalità all'altra. Se `anomalia` resta fluida e sotto il 30-40% di un core, si può valutare di aggiungere la banda di refresh lenta anche al `terminale` (le opzioni sono già indicate in un commento in `modes.ts`).
+**Da verificare sul PC del kiosk:** con Edenna OS aperto, lanciare `top` in un terminale (o via SSH), poi premere Ctrl+Alt+Shift+E per passare da una modalità all'altra.
+
+- Se il `terminale` pesa troppo, si può ridurre il numero di scatti con `--edenna-sweep-steps` in `crt.css`. Per esempio 160 su 16 secondi fa 10 aggiornamenti al secondo.
+- In alternativa si toglie la banda: `enableSweep: false` in `modes.ts`.
 
 ## Alternative valutate
 
@@ -126,6 +131,9 @@ Scelta attuale: effetto **sempre attivo ma discreto**. Valori della modalità `t
 | `scanlineGap` | 3 | Righe più rade |
 | `vignetteIntensity` | 0.12 | Bordi dello schermo più scuri |
 | `curvatureIntensity` | 0.15 | Angoli più scuri e arrotondati (effetto vetro) |
+| `sweepDuration` | 16 | Banda più lenta (secondi per passaggio) |
+| `sweepThickness` | 90 | Banda più alta (pixel) |
+| `opacity` in `crt.css` (`[data-crt-mode="terminale"]`) | 0.6 | Banda più scura |
 
 La modalità `anomalia` usa valori propri, più forti, e non dipende da questi.
 
