@@ -1,0 +1,27 @@
+/*
+ * Adattamento degli effetti CRT all'interfaccia CHIARA di Edenna OS.
+ *
+ * vault66-crt-effect è pensata per schermi scuri: scanline e rumore usano
+ * `mix-blend-mode: screen`, che può solo schiarire e su sfondo bianco non si vede.
+ * Qui li si passa a `multiply`, che scurisce: righe e grana tornano visibili.
+ */
+
+.edenna-crt {
+	width: 100%;
+	height: 100%;
+}
+
+.edenna-crt > .crt-effect-wrapper.scanlines-on::after {
+	mix-blend-mode: multiply;
+}
+
+.edenna-crt > .crt-effect-wrapper > .crt-noise {
+	mix-blend-mode: multiply;
+}
+
+/* Gli strati dell'effetto non devono mai intercettare clic e trascinamenti. */
+.edenna-crt > .crt-effect-wrapper::before,
+.edenna-crt > .crt-effect-wrapper::after,
+.edenna-crt > .crt-effect-wrapper > :not(.crt-inner) {
+	pointer-events: none;
+}

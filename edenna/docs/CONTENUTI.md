@@ -19,7 +19,7 @@ Paragrafo di testo. Le righe consecutive vengono unite.
 Una riga vuota inizia un nuovo paragrafo.
 ```
 
-- L'intestazione tra le righe `---` è facoltativa. I campi riconosciuti sono `codice`, `titolo`, `classificazione` e `data`.
+- L'intestazione tra le righe `---` è facoltativa. I campi riconosciuti sono `codice`, `titolo`, `classificazione` e `data`. Con `effetto: anomalia`, all'apertura del documento parte un disturbo del segnale (vedi [CRT.md](CRT.md)).
 - `# Testo` crea un titolo di sezione.
 - `[[testo]]` diventa una **barra di censura**. Il testo censurato non viene inserito nella pagina: non si può selezionare, copiare o leggere con gli strumenti di sviluppo.
 
